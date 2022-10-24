@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  webserv:
+    container_name: containers
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../..:/app
