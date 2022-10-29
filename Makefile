@@ -1,12 +1,11 @@
-NAME = cocntainers
+NAME = containers
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -pedantic -MMD -MP
 SRCS = $(wildcard srcs/*/*.cpp) containers.cpp
 OBJS = $(SRCS:%.cpp=%.o)
 DEPS = $(OBJS:%.o=%.d)
-HEADERS = $(wildcard srcs/*/*.hpp)
-INCS = $(addprefix -I,$(wildcard srcs/*)) 
-
+HEADERS = $(wildcard include/*.hpp)
+INCS = -Iinclude
 ifdef DEBUG
 	CXXFLAGS += -D DEBUG=true -g -fsanitize=address
 endif
@@ -15,11 +14,6 @@ endif
 
 $(NAME): $(OBJS) ## Build
 	$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS)
-
-$(NAME_BONUS): $(OBJS) ## Build
-	$(CXX) $(CXXFLAGS) -o $(NAME_BONUS) $(OBJS)
-
-bonus: $(NAME_BONUS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(INCS) -o $@ -c $<
@@ -35,39 +29,29 @@ clean: ## Delete object files
 
 re: fclean all ## Rebuild
 
-debug: fclean ## Build in debug mode
-	make DEBUG=true
-
 .PHONY: all fclean clean re bonus
 
 -include $(DEPS)
 
 # -------------------------- Rules For Test -------------------------------
+TEST_SRCS = tests/unit_test/main.cpp
+TEST_OBJS = $(TEST_SRCS:%.cpp=%.o)
+TEST_DEPS = $(TEST_OBJS:%.o=%.d)
+FT_CONTAINER = tests/unit_test/ft_container
+STD_CONTAINER = tests/unit_test/std_container
 
-.PHONY: utest
-utest: ## Exec unit tests1
-	make -C tests/unit_test
+$(FT_CONTAINER): $(TEST_OBJS) 
+	$(CXX) $(CXXFLAGS) -o $@ $(TEST_OBJS) -DLIB=FT
 
-.PHONY: itest
-itest: ## Exec unit tests1
-	make itest-ok && make itest-error
+$(STD_CONTAINER): $(TEST_OBJS) 
+	$(CXX) $(CXXFLAGS) -o $@ $(TEST_OBJS) -DLIB=STD
 
-INTEGRATION_TEST_SHELL_OK = ./tests/integration_test/ok.sh
-.PHONY: itest-ok
-itest-ok: ## Exec unit tests1
-	@if [ ! -x $(INTEGRATION_TEST_SHELL_OK) ]; then\
-		chmod +x $(INTEGRATION_TEST_SHELL_OK);\
-	fi
-	$(INTEGRATION_TEST_SHELL_OK)
+.PHONY: test
+test: $(FT_CONTAINER) $(STD_CONTAINER)## Exec unit tests1
+	$(STD_CONTAINER) | tee $(STD_CONTAINER).out
+	$(FT_CONTAINER)| tee $(FT_CONTAINER).out
+	diff $(STD_CONTAINER).out $(FT_CONTAINER).out
 
-
-INTEGRATION_TEST_SHELL_ERROR = ./tests/integration_test/error.sh
-.PHONY: itest-error
-itest-error: ## Exec unit tests
-	@if [ ! -x $(INTEGRATION_TEST_SHELL_ERROR) ]; then\
-		chmod +x $(INTEGRATION_TEST_SHELL_ERROR);\
-	fi
-	$(INTEGRATION_TEST_SHELL_ERROR)
 
 VALGRIND_TEST_SHELL = ./tests/valgrind/valgrind.sh
 .PHONY: valgrind
@@ -120,7 +104,11 @@ dc-bench:
 	docker exec -it $(CONTAINER) /bin/bash -c \
 	"cd tests/bench &&\
 	g++ mybenchmark.cc -std=c++11 -isystem benchmark/include -Lbenchmark/build/src -lbenchmark -lpthread -o mybenchmark &&\
-	 ./mybenchmark --benchmark_repetitions=1"
+	./mybenchmark --benchmark_repetitions=1  > STD.out &&\
+	./mybenchmark --benchmark_repetitions=1 > FT.out &&\
+	paste FT.out STD.out > join.out  &&\
+	sed '1,3d' ./join.out |awk '{print $1,",", $2 / $8}' > result.csv\
+	"
 # ---------------------------- Rules For Help -----------------------------
 
 .PHONY: help
