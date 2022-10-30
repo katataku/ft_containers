@@ -19,6 +19,7 @@ class vector {
     typedef typename Allocator::const_pointer const_pointer;
     typedef pointer iterator;
     typedef const_pointer const_iterator;
+    // TODO: implement reverse_iterator
     typedef std::reverse_iterator<iterator> reverse_iterator;
     typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
@@ -63,24 +64,31 @@ class vector {
         deallocate();
     };
 
-    // TODO: implement
-    vector &operator=(const vector &x);
+    vector &operator=(const vector &other) {
+        clear();
+        resize(other.size());
+        for (size_type i = 0; i < other.size(); ++i) {
+            first[i] = other[i];
+        }
+        return *this;
+    };
 
-    // TODO: implement
     void assign(size_type count, const T &value) {
-        (void)count;
-        (void)value;
+        clear();
+        reserve(count);
+        insert(begin(), count, value);
     };
 
-    // TODO: implement
     template <class InputIt>
-    void assign(InputIt first, InputIt last) {
-        (void)first;
-        (void)last;
+    void assign(InputIt f, InputIt l,
+                typename std::enable_if<!std::is_integral<InputIt>::value,
+                                        InputIt>::type * = NULL) {
+        clear();
+        reserve(l - f);
+        insert(begin(), f, l);
     };
 
-    // TODO: implement
-    allocator_type get_allocator() const;
+    allocator_type get_allocator() const { return alloc; };
 
     // Element Access
     reference at(size_type i) {
@@ -162,7 +170,7 @@ class vector {
         if (n == 0) return;
         difference_type pos_diff = position - begin();
         size_type new_size = size() + n;
-        reserve(recommend(new_size));
+        if (new_size > capacity()) reserve(recommend(new_size));
         iterator new_position = begin() + pos_diff;
         while (size() < new_size) {
             construct(++last);
@@ -172,11 +180,22 @@ class vector {
         return;
     };
 
-    // TODO: implement
     template <class InputIterator>
-    void insert(iterator position, InputIterator first, InputIterator last,
+    void insert(iterator position, InputIterator f, InputIterator l,
                 typename std::enable_if<!std::is_integral<InputIterator>::value,
-                                        InputIterator>::type * = NULL);
+                                        InputIterator>::type * = NULL) {
+        difference_type pos_diff = position - begin();
+        size_type n = l - f;
+        size_type new_size = size() + n;
+        if (new_size > capacity()) reserve(recommend(new_size));
+        iterator new_position = begin() + pos_diff;
+        while (size() < new_size) {
+            construct(++last);
+        }
+        std::copy_backward(new_position, last - n, last);
+        std::copy(f, l, new_position);
+        return;
+    };
     iterator erase(iterator pos) { return erase(pos, pos + 1); };
     iterator erase(iterator f, iterator l) {
         size_type erase_size = l - f;
@@ -265,6 +284,49 @@ class vector {
         return (std::max<size_type>(new_size, cap * 2));
     }
 };
+
+template <class T, class Allocator>
+bool operator==(const vector<T, Allocator> &lhs,
+                const vector<T, Allocator> &rhs) {
+    return (lhs.size() == rhs.size() &&
+            std::equal(lhs.begin(), lhs.end(), rhs.begin()));
+}
+
+template <class T, class Allocator>
+bool operator!=(const vector<T, Allocator> &lhs,
+                const vector<T, Allocator> &rhs) {
+    return (!(lhs == rhs));
+}
+
+template <class T, class Allocator>
+bool operator<(const vector<T, Allocator> &lhs,
+               const vector<T, Allocator> &rhs) {
+    return (std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
+                                         rhs.end()));
+}
+
+template <class T, class Allocator>
+bool operator<=(const vector<T, Allocator> &lhs,
+                const vector<T, Allocator> &rhs) {
+    return (!(lhs > rhs));
+}
+
+template <class T, class Allocator>
+bool operator>(const vector<T, Allocator> &lhs,
+               const vector<T, Allocator> &rhs) {
+    return (rhs < lhs);
+}
+
+template <class T, class Allocator>
+bool operator>=(const vector<T, Allocator> &lhs,
+                const vector<T, Allocator> &rhs) {
+    return (!(lhs < rhs));
+}
+
+template <class T, class Allocator>
+void swap(vector<T, Allocator> &lhs, vector<T, Allocator> &rhs) {
+    lhs.swap(rhs);
+}
 }  // namespace ft
 
 #endif  // INCLUDE_VECTOR_HPP_

@@ -71,7 +71,17 @@ void assign_test() {
     int_vector numbers0(3);
     print_vec(numbers0);
 
-    numbers0.assign(3, 1);
+    numbers0.assign(2, 1);
+    print_vec(numbers0);
+
+    int_vector numbers1;
+    numbers1.push_back(1);
+    numbers1.push_back(2);
+    numbers1.push_back(3);
+    numbers1.push_back(4);
+    numbers1.push_back(5);
+
+    numbers0.assign(numbers1.begin(), numbers1.end());
     print_vec(numbers0);
 }
 
@@ -223,15 +233,20 @@ void reserve_test() {
 void capacity_test() {
     START_TEST_FUNC
     int_vector numbers;
+    print(numbers.capacity());
     print_vec(numbers);
     numbers.reserve(5);
+    print(numbers.capacity());
     print_vec(numbers);
     numbers.push_back(1);
+    print(numbers.capacity());
     print_vec(numbers);
     numbers.reserve(8);
+    print(numbers.capacity());
     print_vec(numbers);
 
     int_vector numbers1(3);
+    print(numbers.capacity());
     print_vec(numbers);
 }
 
@@ -264,6 +279,16 @@ void insert_test() {
     numbers.insert(numbers.begin() + 1, 9, 9);
     print_vec(numbers);
     numbers.insert(numbers.begin() + 1, 2, 2);
+    print_vec(numbers);
+
+    int_vector numbers1;
+    numbers1.push_back(1);
+    numbers1.push_back(2);
+    numbers1.push_back(3);
+    numbers1.push_back(4);
+    numbers1.push_back(5);
+
+    numbers.insert(numbers.begin(), numbers1.begin(), numbers1.end());
     print_vec(numbers);
 }
 void erase_test() {
@@ -347,9 +372,88 @@ void swap_test() {
     print(*iter);
 }
 
+void get_allocator_test() {
+    START_TEST_FUNC
+    std::allocator<int> alloc;
+    int_vector numbers1;
+    print_bool(numbers1.get_allocator() == alloc);
+}
+
+void eq_test() {
+    START_TEST_FUNC
+    int_vector numbers1;
+    numbers1.resize(5);
+    numbers1[0] = 0;
+    numbers1[1] = 1;
+    numbers1[2] = 2;
+    numbers1[3] = 3;
+    numbers1[4] = 4;
+    int_vector numbers2;
+    numbers2 = numbers1;
+    print_vec(numbers1);
+    print_vec(numbers2);
+}
+
+void comp_op_test() {
+    START_TEST_FUNC
+    int_vector numbers1;
+    numbers1.resize(5);
+    numbers1[0] = 0;
+    numbers1[1] = 1;
+    numbers1[2] = 2;
+    numbers1[3] = 3;
+    numbers1[4] = 4;
+    int_vector numbers2;
+    numbers2.resize(5);
+    numbers2[0] = 0;
+    numbers2[1] = 1;
+    numbers2[2] = 2;
+    numbers2[3] = 3;
+    numbers2[4] = 4;
+
+    print_bool(numbers1 == numbers2);
+    print_bool(numbers1 != numbers2);
+    print_bool(numbers1 < numbers2);
+    print_bool(numbers1 > numbers2);
+    print_bool(numbers1 <= numbers2);
+    print_bool(numbers1 >= numbers2);
+    numbers2[4] = 999;
+    print_bool(numbers1 == numbers2);
+    print_bool(numbers1 != numbers2);
+    print_bool(numbers1 < numbers2);
+    print_bool(numbers1 > numbers2);
+    print_bool(numbers1 <= numbers2);
+    print_bool(numbers1 >= numbers2);
+}
+void nonmember_swap_test() {
+    START_TEST_FUNC
+    int_vector numbers1;
+    numbers1.resize(5);
+    numbers1[0] = 0;
+    numbers1[1] = 1;
+    numbers1[2] = 2;
+    numbers1[3] = 3;
+    numbers1[4] = 4;
+    int_vector numbers2;
+    numbers2.resize(10, 2);
+    int_vector::iterator iter = numbers1.begin();
+    print_vec(numbers1);
+    print_vec(numbers2);
+    print(*(iter++));
+    print(*iter);
+    LIB::swap(numbers1, numbers2);
+    print_vec(numbers1);
+    print_vec(numbers2);
+    print(*(iter++));
+    print(*iter);
+}
 int main() {
     // member function
     constructor_test();
+    eq_test();
+    assign_test();
+    get_allocator_test();
+
     // element access
     at_test();
     operator_test();
@@ -357,7 +461,7 @@ int main() {
     back_test();
     data_test();
 
-    // iterator
+    // iterators
     iterator_test();
 
     // capacity
@@ -375,5 +479,9 @@ int main() {
     pop_back_test();
     resize_test();
     swap_test();
+
+    // Non-member functions
+    comp_op_test();
+    nonmember_swap_test();
     return 0;
 }
