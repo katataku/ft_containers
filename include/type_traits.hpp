@@ -5,13 +5,14 @@
 
 namespace ft {
 // https://en.cppreference.com/w/cpp/types/enable_if
-template <bool Condition, class T = void>
-struct enable_if {};
-
-template <class T>
-struct enable_if<true, T> {
+// 実装はプログラミング言語C++第４版 p.798
+template <bool B, class T = void>
+struct enable_if {
     typedef T type;
 };
+
+template <class T>
+struct enable_if<false, T> {};
 
 }  // namespace ft
 
