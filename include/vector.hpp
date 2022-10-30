@@ -2,6 +2,8 @@
 #define INCLUDE_VECTOR_HPP_
 
 #include <memory>
+
+#include "type_traits.hpp"
 namespace ft {
 template <class T, class Allocator = std::allocator<T> >
 class vector {
@@ -182,8 +184,8 @@ class vector {
 
     template <class InputIterator>
     void insert(iterator position, InputIterator f, InputIterator l,
-                typename std::enable_if<!std::is_integral<InputIterator>::value,
-                                        InputIterator>::type * = NULL) {
+                typename ft::enable_if<!std::is_integral<InputIterator>::value,
+                                       InputIterator>::type * = NULL) {
         difference_type pos_diff = position - begin();
         size_type n = l - f;
         size_type new_size = size() + n;
