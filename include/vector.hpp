@@ -82,9 +82,8 @@ class vector {
     };
 
     template <class InputIt>
-    void assign(InputIt f, InputIt l,
-                typename std::enable_if<!std::is_integral<InputIt>::value,
-                                        InputIt>::type * = NULL) {
+    typename ft::enable_if<!std::is_integral<InputIt>::value, void>::type
+    assign(InputIt f, InputIt l) {
         clear();
         reserve(l - f);
         insert(begin(), f, l);
@@ -182,10 +181,10 @@ class vector {
         return;
     };
 
+    // https://github.dev/llvm/llvm-project/blob/main/libcxx/include/vector
     template <class InputIterator>
-    void insert(iterator position, InputIterator f, InputIterator l,
-                typename ft::enable_if<!std::is_integral<InputIterator>::value,
-                                       InputIterator>::type * = NULL) {
+    typename ft::enable_if<!std::is_integral<InputIterator>::value, void>::type
+    insert(iterator position, InputIterator f, InputIterator l) {
         difference_type pos_diff = position - begin();
         size_type n = l - f;
         size_type new_size = size() + n;
