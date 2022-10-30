@@ -10,6 +10,16 @@ ifdef DEBUG
 	CXXFLAGS += -D DEBUG=true -g -fsanitize=address
 endif
 
+TEST_SRCS = tests/unit_test/main.cpp
+FT_MAIN.O = tests/unit_test/ft_main.o
+STD_MAIN.O = tests/unit_test/std_main.o
+TEST_OBJS = $(FT_MAIN.O) $(STD_MAIN.O)
+TEST_DEPS = $(TEST_OBJS:%.o=%.d)
+FT_CONTAINER = tests/unit_test/ft_container
+STD_CONTAINER = tests/unit_test/std_container
+FT_CONTAINER_OUTPUT= $(FT_CONTAINER).out
+STD_CONTAINER_OUTPUT= $(STD_CONTAINER).out
+
 # -------------------------- Rules For Build ------------------------------
 
 $(NAME): $(OBJS) ## Build
@@ -21,37 +31,36 @@ $(NAME): $(OBJS) ## Build
 all: $(NAME) ## Build
 
 fclean: clean ## Delete executable
-	$(RM) $(NAME)
-	$(RM) $(NAME_BONUS)
+	$(RM) $(NAME) $(FT_CONTAINER) $(STD_CONTAINER)
 
 clean: ## Delete object files
-	$(RM) $(OBJS) $(DEPS)
+	$(RM) $(OBJS) $(DEPS) $(TEST_OBJS) $(TEST_DEPS) $(FT_CONTAINER_OUTPUT) $(STD_CONTAINER_OUTPUT)
 
 re: fclean all ## Rebuild
 
 .PHONY: all fclean clean re bonus
 
--include $(DEPS)
+-include $(TEST_DEPS)
 
 # -------------------------- Rules For Test -------------------------------
-TEST_SRCS = tests/unit_test/main.cpp
-TEST_OBJS = $(TEST_SRCS:%.cpp=%.o)
-TEST_DEPS = $(TEST_OBJS:%.o=%.d)
-FT_CONTAINER = tests/unit_test/ft_container
-STD_CONTAINER = tests/unit_test/std_container
+$(FT_MAIN.O): $(TEST_SRCS)
+	$(CXX) $(CXXFLAGS) $(INCS) -o $@ -c $< -DLIB=ft
+$(STD_MAIN.O): $(TEST_SRCS)
+	$(CXX) $(CXXFLAGS) $(INCS) -o $@ -c $< -DLIB=std
 
-$(FT_CONTAINER): $(TEST_OBJS) 
-	$(CXX) $(CXXFLAGS) -o $@ $(TEST_OBJS) -DLIB=FT
+$(FT_CONTAINER): $(FT_MAIN.O) 
+	$(CXX) $(CXXFLAGS) -o $@ $(FT_MAIN.O)
 
-$(STD_CONTAINER): $(TEST_OBJS) 
-	$(CXX) $(CXXFLAGS) -o $@ $(TEST_OBJS) -DLIB=STD
+$(STD_CONTAINER): $(STD_MAIN.O) 
+	$(CXX) $(CXXFLAGS) -o $@ $(STD_MAIN.O)
 
 .PHONY: test
 test: $(FT_CONTAINER) $(STD_CONTAINER)## Exec unit tests1
-	$(STD_CONTAINER) | tee $(STD_CONTAINER).out
-	$(FT_CONTAINER)| tee $(FT_CONTAINER).out
+	$(STD_CONTAINER) | tee $(STD_CONTAINER_OUTPUT)
+	$(FT_CONTAINER)| tee $(FT_CONTAINER_OUTPUT)
 	diff $(STD_CONTAINER).out $(FT_CONTAINER).out
 
+-include $(DEPS)
 
 VALGRIND_TEST_SHELL = ./tests/valgrind/valgrind.sh
 .PHONY: valgrind

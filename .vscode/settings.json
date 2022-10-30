@@ -41,7 +41,7 @@
 		"performance-type-promotion-in-math-fn"
 	],
 	"C_Cpp.default.includePath": [
-		"${workspaceFolder}/srcs/**",
+		"${workspaceFolder}/include",
 		"/usr/local/include"
 	]
 }
