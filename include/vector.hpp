@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "algorithm.hpp"
+#include "iterator.hpp"
 #include "type_traits.hpp"
 namespace ft {
 template <class T, class Allocator = std::allocator<T> >
@@ -23,8 +24,8 @@ class vector {
     typedef pointer iterator;
     typedef const_pointer const_iterator;
     // TODO: implement reverse_iterator
-    typedef std::reverse_iterator<iterator> reverse_iterator;
-    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+    typedef ft::reverse_iterator<iterator> reverse_iterator;
+    typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
     /********************
      * Member functions *
