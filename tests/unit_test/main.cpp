@@ -447,6 +447,23 @@ void nonmember_swap_test() {
     print(*(iter++));
     print(*iter);
 }
+
+template <typename T>
+void func(T t, typename LIB::enable_if<LIB::is_integral<T>::value>::type* = 0) {
+    std::cout << t << "は整数だよ" << std::endl;
+}
+
+template <typename T>
+void func(T t,
+          typename LIB::enable_if<!LIB::is_integral<T>::value>::type* = 0) {
+    std::cout << t << "引数は整数じゃないよ" << std::endl;
+}
+
+void is_integral_test() {
+    int a = 10;
+    func(a);
+}
+
 int main() {
     // member function
     constructor_test();
@@ -483,5 +500,7 @@ int main() {
     // Non-member functions
     comp_op_test();
     nonmember_swap_test();
+
+    is_integral_test();
     return 0;
 }
