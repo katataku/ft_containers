@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "algorithm.hpp"
 #include "type_traits.hpp"
 namespace ft {
 template <class T, class Allocator = std::allocator<T> >
@@ -290,7 +291,7 @@ template <class T, class Allocator>
 bool operator==(const vector<T, Allocator> &lhs,
                 const vector<T, Allocator> &rhs) {
     return (lhs.size() == rhs.size() &&
-            std::equal(lhs.begin(), lhs.end(), rhs.begin()));
+            ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 }
 
 template <class T, class Allocator>
@@ -302,8 +303,8 @@ bool operator!=(const vector<T, Allocator> &lhs,
 template <class T, class Allocator>
 bool operator<(const vector<T, Allocator> &lhs,
                const vector<T, Allocator> &rhs) {
-    return (std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
-                                         rhs.end()));
+    return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
+                                        rhs.end()));
 }
 
 template <class T, class Allocator>
