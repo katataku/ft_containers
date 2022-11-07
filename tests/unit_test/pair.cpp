@@ -13,13 +13,13 @@ typedef LIB::pair<int, int> int_pair;
 
 void print_bool(bool x) {
     if (x)
-        std::cout << "true" << std::endl;
+        std::cout << "true" << std::endl << std::endl;
     else
-        std::cout << "false" << std::endl;
+        std::cout << "false" << std::endl << std::endl;
 }
 
-void print(int x) { std::cout << x << std::endl; }
-void print(std::string x) { std::cout << x << std::endl; }
+void print(int x) { std::cout << x << std::endl << std::endl; }
+void print(std::string x) { std::cout << x << std::endl << std::endl; }
 
 void pair_test() {
     START_TEST_FUNC

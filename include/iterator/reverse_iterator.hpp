@@ -6,6 +6,9 @@
 
 namespace ft {
 
+/********************
+ * reverse_iterator *
+ ********************/
 template <class Iter>
 class reverse_iterator
     : public iterator<typename ft::iterator_traits<Iter>::iterator_category,

@@ -1,7 +1,9 @@
 #ifndef INCLUDE_PAIR_HPP_
 #define INCLUDE_PAIR_HPP_
 
+#include <iostream>
 namespace ft {
+
 template <class T1, class T2>
 struct pair {
  public:
@@ -12,10 +14,7 @@ struct pair {
     pair(const T1& x, const T2& y) : first(x), second(y){};
     template <class U1, class U2>
     pair(const pair<U1, U2>& p) : first(p.first), second(p.second){};
-    pair(const pair& p) {
-        this->first = p.first;
-        this->second = p.second;
-    };
+    pair(const pair& p) : first(p.first), second(p.second){};
 
     pair& operator=(const pair& other) {
         this->first = other.first;
@@ -62,6 +61,12 @@ ft::pair<T1, T2> make_pair(T1 t, T2 u) {
     return pair<T1, T2>(t, u);
 }
 
+template <class T1, class T2>
+std::ostream& operator<<(std::ostream& stream, const ft::pair<T1, T2>& value) {
+    stream << std::to_string(value.first) << ":"
+           << std::to_string(value.second);
+    return stream;
+}
 }  // namespace ft
 
 #endif  // INCLUDE_PAIR_HPP_

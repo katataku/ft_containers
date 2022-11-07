@@ -4,6 +4,9 @@
 
 namespace ft {
 
+/********************
+ * Iterator         *
+ ********************/
 template <class Category, class T, class Distance = ptrdiff_t,
           class Pointer = T*, class Reference = T&>
 struct iterator {
@@ -13,6 +16,7 @@ struct iterator {
     typedef Pointer pointer;
     typedef Reference reference;
 };
+
 }  // namespace ft
 
 #endif  // INCLUDE_ITERATOR_ITERATOR_HPP_

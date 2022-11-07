@@ -58,7 +58,9 @@ $(STD_CONTAINER): $(STD_MAIN.O)
 test: $(FT_CONTAINER) $(STD_CONTAINER)## Exec unit tests1
 	$(STD_CONTAINER) | tee $(STD_CONTAINER_OUTPUT)
 	$(FT_CONTAINER)| tee $(FT_CONTAINER_OUTPUT)
+	cp ./tests/unit_test/ft_container.out ./tests/unit_test/ft_container.md
 	diff $(STD_CONTAINER).out $(FT_CONTAINER).out
+
 
 -include $(DEPS)
 

@@ -1,3 +1,5 @@
+#ifndef INCLUDE_VECTOR_20COPY_HPP_
+#define INCLUDE_VECTOR_20COPY_HPP_
 #ifndef INCLUDE_VECTOR_HPP_
 #define INCLUDE_VECTOR_HPP_
 
@@ -5,89 +7,91 @@
 
 #include "algorithm.hpp"
 #include "iterator.hpp"
+#include "tree.hpp"
 #include "type_traits.hpp"
+#include "utility.hpp"
+
 namespace ft {
-template <class T, class Allocator = std::allocator<T> >
-class vector {
+template <class Key, class T, class Compare = std::less<Key>,
+          class Allocator = std::allocator<ft::pair<const Key, T> > >
+class map {
+ private:
+    typedef AVL_tree_iterator<T> tree_type;
+
  public:
     /********************
      * Member type      *
      ********************/
-    typedef T value_type;
-    typedef Allocator allocator_type;
+    typedef Key key_type;
+    typedef T mapped_type;
+    typedef ft::pair<const Key, T> value_type;
     typedef std::size_t size_type;
     typedef std::ptrdiff_t difference_type;
+    typedef Compare key_compare;
+    typedef Allocator allocator_type;
     typedef value_type &reference;
     typedef const value_type &const_reference;
     typedef typename Allocator::pointer pointer;
     typedef typename Allocator::const_pointer const_pointer;
-    typedef pointer iterator;
-    typedef const_pointer const_iterator;
+    typedef tree_type iterator;
+    typedef const tree_type const_iterator;
     typedef ft::reverse_iterator<iterator> reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
     /********************
+     * Member Class     *
+     ********************/
+    class value_compare : std::binary_function<value_type, value_type, bool> {
+     public:
+        typedef bool result_type;
+        typedef value_type first_argument_type;
+        typedef value_type second_argument_type;
+
+     protected:
+        Compare comp;
+        value_compare(Compare c) : comp(c) {}
+
+     public:
+        bool operator()(const value_type &lhs, const value_type &rhs) const {
+            return comp(lhs.first, rhs.first);
+        }
+    };
+    /********************
      * Member functions *
      ********************/
     // Constructor
-    vector()
-        : first(NULL),
-          last(NULL),
-          reserved_last(NULL),
-          alloc(allocator_type()){};
-    explicit vector(const Allocator &alloc)
-        : first(NULL), last(NULL), reserved_last(NULL), alloc(alloc){};
+    map() : tree(NULL), alloc(allocator_type()){};
 
-    explicit vector(size_type count, const T &value = T(),
-                    const Allocator &alloc = Allocator())
-        : first(NULL), last(NULL), reserved_last(NULL), alloc(alloc) {
-        resize(count, value);
-    };
+    explicit map(const Compare &comp, const Allocator &alloc = Allocator())
+        : tree(NULL), alloc(alloc){};
 
     template <class InputIt>
-    vector(InputIt first, InputIt last, const Allocator &alloc = Allocator())
-        : first(NULL), last(NULL), reserved_last(NULL), alloc(alloc) {
-        reserve(recommend(last - first));
+    map(InputIt first, InputIt last, const Compare &comp = Compare(),
+        const Allocator &alloc = Allocator())
+        : tree(NULL), alloc(alloc) {
         for (InputIt i = first; i != last; ++i) {
-            push_back(*i);
+            insert(*i);
         }
     }
 
-    vector(const vector &other)
-        : first(NULL), last(NULL), reserved_last(NULL), alloc(other.alloc) {
-        resize(other.size());
-        for (size_type i = 0; i < other.size(); ++i) {
-            first[i] = other[i];
+    map(const map &other) : tree(NULL), alloc(other.alloc) {
+        for (iterator it = other.begin(); it != other.end(); ++it) {
+            insert(*it);
         }
     };
 
     // Destructor
-    ~vector() {
+    ~map() {
         clear();
         deallocate();
     };
 
-    vector &operator=(const vector &other) {
+    map &operator=(const map &other) {
         clear();
-        resize(other.size());
-        for (size_type i = 0; i < other.size(); ++i) {
-            first[i] = other[i];
+        for (iterator it = other.begin(); it != other.end(); ++it) {
+            insert(*it);
         }
         return *this;
-    };
-
-    void assign(size_type count, const T &value) {
-        clear();
-        reserve(count);
-        insert(begin(), count, value);
-    };
-
-    template <class InputIt>
-    typename ft::enable_if<!std::is_integral<InputIt>::value, void>::type
-    assign(InputIt f, InputIt l) {
-        clear();
-        reserve(l - f);
-        insert(begin(), f, l);
     };
 
     allocator_type get_allocator() const { return alloc; };
@@ -248,12 +252,7 @@ class vector {
      ************************/
 
  private:
-    // 先頭の要素へのポインター
-    pointer first;
-    // 最後の要素の1つ前方のポインター
-    pointer last;
-    // 確保したストレージの終端
-    pointer reserved_last;
+    tree_type tree;
     // アロケーターの値
     allocator_type alloc;
 
@@ -288,47 +287,43 @@ class vector {
 };
 
 template <class T, class Allocator>
-bool operator==(const vector<T, Allocator> &lhs,
-                const vector<T, Allocator> &rhs) {
+bool operator==(const map<T, Allocator> &lhs, const map<T, Allocator> &rhs) {
     return (lhs.size() == rhs.size() &&
             ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 }
 
 template <class T, class Allocator>
-bool operator!=(const vector<T, Allocator> &lhs,
-                const vector<T, Allocator> &rhs) {
+bool operator!=(const map<T, Allocator> &lhs, const map<T, Allocator> &rhs) {
     return (!(lhs == rhs));
 }
 
 template <class T, class Allocator>
-bool operator<(const vector<T, Allocator> &lhs,
-               const vector<T, Allocator> &rhs) {
+bool operator<(const map<T, Allocator> &lhs, const map<T, Allocator> &rhs) {
     return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
                                         rhs.end()));
 }
 
 template <class T, class Allocator>
-bool operator<=(const vector<T, Allocator> &lhs,
-                const vector<T, Allocator> &rhs) {
+bool operator<=(const map<T, Allocator> &lhs, const map<T, Allocator> &rhs) {
     return (!(lhs > rhs));
 }
 
 template <class T, class Allocator>
-bool operator>(const vector<T, Allocator> &lhs,
-               const vector<T, Allocator> &rhs) {
+bool operator>(const map<T, Allocator> &lhs, const map<T, Allocator> &rhs) {
     return (rhs < lhs);
 }
 
 template <class T, class Allocator>
-bool operator>=(const vector<T, Allocator> &lhs,
-                const vector<T, Allocator> &rhs) {
+bool operator>=(const map<T, Allocator> &lhs, const map<T, Allocator> &rhs) {
     return (!(lhs < rhs));
 }
 
 template <class T, class Allocator>
-void swap(vector<T, Allocator> &lhs, vector<T, Allocator> &rhs) {
+void swap(map<T, Allocator> &lhs, map<T, Allocator> &rhs) {
     lhs.swap(rhs);
 }
 }  // namespace ft
 
 #endif  // INCLUDE_VECTOR_HPP_
+
+#endif  // INCLUDE_VECTOR_20COPY_HPP_
