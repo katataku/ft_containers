@@ -14,16 +14,6 @@
 typedef ft::pair<const int, int> int_int_pair;
 typedef ft::AVL_tree<int_int_pair> AVLtree;
 
-void print_bool(bool x) {
-    if (x)
-        std::cout << "true" << std::endl;
-    else
-        std::cout << "false" << std::endl;
-}
-
-void print(int x) { std::cout << x << std::endl; }
-void print(std::string x) { std::cout << x << std::endl; }
-
 void tree_remove_test() {
     START_TEST_FUNC
     AVLtree a(510, 510);
@@ -47,7 +37,7 @@ void tree_remove_test() {
     // a.print_tree();
 }
 
-int main() {
+int main_tree() {
     tree_remove_test();
     // tree_insert_test();
     // tree_insert_stress_test();

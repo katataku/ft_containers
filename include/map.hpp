@@ -98,20 +98,42 @@ class map {
     iterator find(const Key &key);
     const_iterator find(const Key &key) const;
 
-    size_t size() const { return tree->size(); };
+    size_t size() const {
+        if (tree) return tree->size();
+        return 0;
+    };
 
     // Iterators
-    // Iterators
-    iterator begin() { return tree->begin(); }
-    iterator begin() const { return tree->begin(); }
-    iterator end() { return tree->end(); }
-    iterator end() const { return tree->end(); }
-    reverse_iterator rbegin() { return reverse_iterator(tree->end()); }
-    reverse_iterator rend() { return reverse_iterator(tree->begin()); }
+    iterator begin() {
+        if (!tree) return NULL;
+        return tree->begin();
+    }
+    iterator begin() const {
+        if (!tree) return NULL;
+        return tree->begin();
+    }
+    iterator end() {
+        if (!tree) return NULL;
+        return tree->end();
+    }
+    iterator end() const {
+        if (!tree) return NULL;
+        return tree->end();
+    }
+    reverse_iterator rbegin() {
+        if (!tree) return NULL;
+        return reverse_iterator(tree->end());
+    }
+    reverse_iterator rend() {
+        if (!tree) return NULL;
+        return reverse_iterator(tree->begin());
+    }
     const_reverse_iterator rbegin() const {
+        if (!tree) return NULL;
         return const_reverse_iterator(tree->end());
     }
     const_reverse_iterator rend() const {
+        if (!tree) return NULL;
         return const_reverse_iterator(tree->begin());
     }
 

@@ -52,7 +52,7 @@ class node {
     }
 
     Key get_key() const { return this->value.first; }
-    value_type& get_value() const { return this->value; }
+    value_type get_value() const { return this->value; }
 
     size_t get_size() {
         size_t size = 1;
@@ -208,18 +208,24 @@ class node {
     }
 };
 
-template <class Value_type>
+template <class value_type>
 struct AVL_tree_iterator
-    : public ft::iterator<std::bidirectional_iterator_tag, Value_type> {
+    : public ft::iterator<std::bidirectional_iterator_tag, value_type> {
  private:
-    typedef typename ft::iterator<std::bidirectional_iterator_tag, Value_type>
+    typedef typename ft::iterator<std::bidirectional_iterator_tag, value_type>
         base_iterator;
 
- public:
+ public:  // member typedefs
+    typedef typename base_iterator::iterator_category iterator_category;
+    // typedef typename base_iterator::value_type value_type;
+    typedef typename base_iterator::difference_type difference_type;
+    typedef typename base_iterator::pointer pointer;
+    typedef typename base_iterator::reference reference;
+
  private:
-    typedef typename Value_type::first_type Key;
-    typedef typename Value_type::second_type T;
-    typedef node<Value_type>* node_ptr;
+    typedef typename value_type::first_type Key;
+    typedef typename value_type::second_type T;
+    typedef node<value_type>* node_ptr;
 
  private:
     node_ptr current;
@@ -250,15 +256,8 @@ struct AVL_tree_iterator
 
     // Swappable
 
-    // member typedefs
-    typedef typename base_iterator::iterator_category iterator_category;
-    typedef typename base_iterator::value_type value_type;
-    typedef typename base_iterator::difference_type difference_type;
-    typedef typename base_iterator::pointer pointer;
-    typedef typename base_iterator::reference reference;
-
     // dereferenceable
-    reference operator*() const { return current->get_value(); }
+    reference operator*() const { return (current->value); }
 
     // incrementable
     AVL_tree_iterator& operator++() {
