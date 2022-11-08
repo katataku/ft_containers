@@ -11,7 +11,9 @@
 #define LIB ft
 #endif
 
-typedef ft::AVL_tree<int, int> AVLtree;
+typedef ft::pair<const int, int> int_int_pair;
+typedef ft::AVL_tree<int_int_pair> AVLtree;
+
 void print_bool(bool x) {
     if (x)
         std::cout << "true" << std::endl;

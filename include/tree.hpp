@@ -12,12 +12,15 @@ namespace ft {
 #define ARROW_LEFT_SIDE "-->"
 
 // https://tjkendev.github.io/procon-library/cpp/binary_search_tree/avl-tree.html
-template <class Key, class T>
+template <class value_type>
 class node {
  public:
-    typedef Key key_type;
-    typedef T mapped_type;
-    typedef ft::pair<const Key, T> value_type;
+    typedef typename value_type::first_type const Key;
+    typedef typename value_type::second_type T;
+
+    // typedef Key key_type;
+    // typedef T mapped_type;
+    // typedef ft::pair<const Key, T> value_type;
 
     value_type value;
     node* left_child;
@@ -33,7 +36,7 @@ class node {
           hight(-1){};
 
     node(Key k, T v)
-        : value(make_pair<Key, T>(k, v)),
+        : value(value_type(k, v)),
           left_child(NULL),
           right_child(NULL),
           parent(NULL),
@@ -48,9 +51,15 @@ class node {
         return *this;
     }
 
-    Key get_key() { return this->value.first; }
-    T get_value() { return this->value.second; }
+    Key get_key() const { return this->value.first; }
+    value_type& get_value() const { return this->value; }
 
+    size_t get_size() {
+        size_t size = 1;
+        if (this->left_child) size += left_child->get_size();
+        if (this->right_child) size += right_child->get_size();
+        return size;
+    }
     int get_hight() {
         this->update_hight();
         return hight;
@@ -153,8 +162,8 @@ class node {
     }
 
     node* get_next_node() {
-        if (this->right) {
-            return (this->right->get_min_node());
+        if (this->right_child) {
+            return (this->right_child->get_min_node());
         } else {
             node* cur = this;
             while (cur->is_right()) {
@@ -175,11 +184,14 @@ class node {
             return cur->parent;
         }
     }
-    void print(value_type x) { std::cout << x << std::endl; }
+    void print(value_type x) {
+        std::cout << x.first << ":" << x.second << std::endl;
+    }
     void print(std::string x) { std::cout << x << std::endl; }
 
     void print_arrow(value_type start, value_type end, std::string arrow) {
-        std::cout << start << arrow << end << std::endl;
+        std::cout << start.first << ":" << start.second << arrow << end.first
+                  << ":" << end.second << std::endl;
     }
 
     void print_node() {
@@ -196,20 +208,132 @@ class node {
     }
 };
 
-template <class Key, class T>
+template <class Value_type>
+struct AVL_tree_iterator
+    : public ft::iterator<std::bidirectional_iterator_tag, Value_type> {
+ private:
+    typedef typename ft::iterator<std::bidirectional_iterator_tag, Value_type>
+        base_iterator;
+
+ public:
+ private:
+    typedef typename Value_type::first_type Key;
+    typedef typename Value_type::second_type T;
+    typedef node<Value_type>* node_ptr;
+
+ private:
+    node_ptr current;
+
+ public:
+    node_ptr base() const { return current; }
+
+    AVL_tree_iterator(node_ptr node) : current(node) {}
+
+    /********************
+     * LegacyIterator   *
+     ********************/
+
+    // CopyConstructible
+    template <class Iter>
+    AVL_tree_iterator(const AVL_tree_iterator<Iter>& other) : current(NULL) {
+        *this = other;
+    }
+
+    // CopyAssignable
+    template <class Iter>
+    AVL_tree_iterator& operator=(const AVL_tree_iterator<Iter>& other) {
+        current = other.base();
+        return *this;
+    }
+    // Destructible
+    ~AVL_tree_iterator() {}
+
+    // Swappable
+
+    // member typedefs
+    typedef typename base_iterator::iterator_category iterator_category;
+    typedef typename base_iterator::value_type value_type;
+    typedef typename base_iterator::difference_type difference_type;
+    typedef typename base_iterator::pointer pointer;
+    typedef typename base_iterator::reference reference;
+
+    // dereferenceable
+    reference operator*() const { return current->get_value(); }
+
+    // incrementable
+    AVL_tree_iterator& operator++() {
+        current = current->get_next_node();
+        return *this;
+    }
+    AVL_tree_iterator operator++(int) {
+        AVL_tree_iterator tmp(*this);
+        ++(*this);
+        return tmp;
+    }
+
+    /**********************
+     * LegacyInputIterator*
+     **********************/
+
+    // EqualityComparable
+
+    pointer operator->() const { return current->get_value(); }
+
+    /************************
+     * LegacyForwardIterator*
+     ************************/
+
+    // DefaultConstructible
+    AVL_tree_iterator() : current(NULL) {}
+
+    // Multipass guarantee
+    // trivial: nothing todo.
+
+    // Equality and inequality comparison\
+    // describe in Non-member functions.
+
+    /******************************
+     * LegacyBidirectionalIterator*
+     ******************************/
+    // decrementable
+    AVL_tree_iterator& operator--() {
+        current = current->get_prev_node();
+        return *this;
+    }
+    AVL_tree_iterator operator--(int) {
+        AVL_tree_iterator tmp(*this);
+        --(*this);
+        return tmp;
+    }
+};
+
+// Non-member functions
+template <class Iter11, class Iter21>
+bool operator==(const ft::AVL_tree_iterator<Iter11>& lhs,
+                const ft::AVL_tree_iterator<Iter21>& rhs) {
+    return lhs.base() == rhs.base();
+}
+template <class Iter11, class Iter21>
+bool operator!=(const ft::AVL_tree_iterator<Iter11>& lhs,
+                const ft::AVL_tree_iterator<Iter21>& rhs) {
+    return lhs.base() != rhs.base();
+}
+
+template <class value_type>
 class AVL_tree {
  public:
-    typedef Key key_type;
-    typedef T mapped_type;
-    typedef ft::pair<const Key, T> value_type;
+    typedef typename value_type::first_type Key;
+    typedef typename value_type::second_type T;
 
-    typedef node<Key, T>* node_ptr;
+    typedef node<value_type>* node_ptr;
+    typedef AVL_tree_iterator<value_type> iterator;
+    typedef std::size_t size_type;
 
     node_ptr root;
 
     AVL_tree() : root(NULL){};
-    AVL_tree(value_type x) : root(new node<Key, T>(x)){};
-    AVL_tree(Key k, T v) : root(new node<Key, T>(k, v)){};
+    AVL_tree(value_type x) : root(new node<value_type>(x)){};
+    AVL_tree(Key k, T v) : root(new node<value_type>(k, v)){};
 
     node_ptr search_parent(Key x) {
         if (root == NULL) return NULL;
@@ -224,6 +348,7 @@ class AVL_tree {
             }
         }
     }
+    size_type size() const { return root->get_size(); };
 
     void balance(node_ptr node) {
         if (node == NULL) return;
@@ -317,7 +442,7 @@ class AVL_tree {
     bool insert(Key key, T value) {
         if (find(key)) return false;
         node_ptr new_parent = search_parent(key);
-        node_ptr new_node = new node<Key, T>(key, value);
+        node_ptr new_node = new node<ft::pair<const Key, T> >(key, value);
         if (new_parent == NULL) {
             root = new_node;
             return true;
@@ -344,118 +469,10 @@ class AVL_tree {
         print("```");
         print("-----------------");
     }
+
+    iterator begin() { return iterator(root->get_min_node()); }
+    iterator end() { return iterator(root->get_max_node()); }
 };
-
-template <class Value_type>
-struct AVL_tree_iterator
-    : public ft::iterator<std::bidirectional_iterator_tag, Value_type> {
- private:
-    typedef typename ft::iterator<std::bidirectional_iterator_tag, Value_type>
-        base_iterator;
-
- public:
- private:
-    typedef typename Value_type::first_type Key;
-    typedef typename Value_type::second_type T;
-    typedef typename AVL_tree<Key, T>::node_ptr node_ptr;
-
- private:
-    node_ptr current;
-
-    node_ptr base() const { return current; }
-
- public:
-    /********************
-     * LegacyIterator   *
-     ********************/
-
-    // CopyConstructible
-    template <class Iter>
-    AVL_tree_iterator(const AVL_tree_iterator<Iter>& other) : current(NULL) {
-        *this = other;
-    }
-
-    // CopyAssignable
-    template <class Iter>
-    AVL_tree_iterator& operator=(const AVL_tree_iterator<Iter>& other) {
-        current = other.base();
-        return *this;
-    }
-    // Destructible
-    ~AVL_tree_iterator() {}
-
-    // Swappable
-
-    // member typedefs
-    typedef typename ft::iterator_traits<Value_type>::iterator_category
-        iterator_category;
-    typedef typename ft::iterator_traits<Value_type>::value_type value_type;
-    typedef typename ft::iterator_traits<Value_type>::difference_type
-        difference_type;
-    typedef typename ft::iterator_traits<Value_type>::pointer pointer;
-    typedef typename ft::iterator_traits<Value_type>::reference reference;
-
-    // dereferenceable
-    reference operator*() const { return current->get_value(); }
-
-    // incrementable
-    AVL_tree_iterator& operator++() {
-        current = current->get_next_node();
-        return *this;
-    }
-    AVL_tree_iterator operator++(int) {
-        AVL_tree_iterator tmp(*this);
-        ++(*this);
-        return tmp;
-    }
-
-    /**********************
-     * LegacyInputIterator*
-     **********************/
-
-    // EqualityComparable
-
-    pointer operator->() const { return &current->get_value(); }
-
-    /************************
-     * LegacyForwardIterator*
-     ************************/
-
-    // DefaultConstructible
-    AVL_tree_iterator() : current(NULL) {}
-
-    // Multipass guarantee
-    // trivial: nothing todo.
-
-    // Equality and inequality comparison\
-    // describe in Non-member functions.
-
-    /******************************
-     * LegacyBidirectionalIterator*
-     ******************************/
-    // decrementable
-    AVL_tree_iterator& operator--() {
-        current = current->get_prev_node();
-        return *this;
-    }
-    AVL_tree_iterator operator--(int) {
-        AVL_tree_iterator tmp(*this);
-        --(*this);
-        return tmp;
-    }
-};
-
-// Non-member functions
-template <class Iter11, class Iter21>
-bool operator==(const ft::AVL_tree_iterator<Iter11>& lhs,
-                const ft::AVL_tree_iterator<Iter21>& rhs) {
-    return lhs.base() == rhs.base();
-}
-template <class Iter11, class Iter21>
-bool operator!=(const ft::AVL_tree_iterator<Iter11>& lhs,
-                const ft::AVL_tree_iterator<Iter21>& rhs) {
-    return lhs.base() != rhs.base();
-}
 
 }  // namespace ft
 

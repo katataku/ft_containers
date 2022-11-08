@@ -2,6 +2,8 @@
 #define INCLUDE_PAIR_HPP_
 
 #include <iostream>
+#include <sstream>
+#include <string>
 namespace ft {
 
 template <class T1, class T2>
@@ -61,12 +63,6 @@ ft::pair<T1, T2> make_pair(T1 t, T2 u) {
     return pair<T1, T2>(t, u);
 }
 
-template <class T1, class T2>
-std::ostream& operator<<(std::ostream& stream, const ft::pair<T1, T2>& value) {
-    stream << std::to_string(value.first) << ":"
-           << std::to_string(value.second);
-    return stream;
-}
 }  // namespace ft
 
 #endif  // INCLUDE_PAIR_HPP_
