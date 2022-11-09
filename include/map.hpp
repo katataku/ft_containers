@@ -36,7 +36,7 @@ class map {
     typedef typename Allocator::pointer pointer;
     typedef typename Allocator::const_pointer const_pointer;
     typedef AVL_tree_iterator<value_type> iterator;
-    typedef const tree_type const_iterator;
+    typedef const iterator const_iterator;
     typedef ft::reverse_iterator<iterator> reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
@@ -58,6 +58,7 @@ class map {
             return comp(lhs.first, rhs.first);
         }
     };
+
     /********************
      * Member functions *
      ********************/
@@ -95,15 +96,13 @@ class map {
     };
 
     allocator_type get_allocator() const { return alloc; };
-    iterator find(const Key &key);
-    const_iterator find(const Key &key) const;
+    /********************
+     * Element Access   *
+     ********************/
 
-    size_t size() const {
-        if (tree) return tree->size();
-        return 0;
-    };
-
-    // Iterators
+    /********************
+     * Iterators        *
+     ********************/
     iterator begin() {
         if (!tree) return NULL;
         return tree->begin();
@@ -135,6 +134,65 @@ class map {
     const_reverse_iterator rend() const {
         if (!tree) return NULL;
         return const_reverse_iterator(tree->begin());
+    }
+    /********************
+     * Capacity         *
+     ********************/
+
+    size_t size() const {
+        if (tree) return tree->size();
+        return 0;
+    };
+
+    /********************
+     * Modifiers        *
+     ********************/
+
+    // insert
+
+    // TODO: return value;
+    // TODO: impl testcode;
+    ft::pair<iterator, bool> insert(const value_type &value) {
+        if (!tree) tree = new AVL_tree<value_type>();
+
+        if (tree) {
+            if (tree->insert(value)) {
+                return ft::make_pair<iterator, bool>(NULL, true);
+            }
+        }
+        return ft::make_pair<iterator, bool>(NULL, false);
+    };
+
+    // TODO: impl testcode;
+    iterator insert(iterator pos, const value_type &value) {
+        (void)pos;
+        return insert(value);
+    };
+
+    // TODO: impl testcode;
+    template <class InputIt>
+    void insert(InputIt first, InputIt last) {
+        for (InputIt it = first; it != last; ++it) {
+            insert(*it);
+        }
+    };
+
+    /********************
+     * Lookup           *
+     ********************/
+
+    // TODO: impl;
+    iterator find(const Key &key) {
+        for (iterator it = begin(); it != end(); ++it) {
+            if (it->first == key) return it;
+        }
+        return end();
+    }
+    const_iterator find(const Key &key) const {
+        for (const_iterator it = begin(); it != end(); ++it) {
+            if (it->first == key) return it;
+        }
+        return end();
     }
 
     key_compare key_comp() const { return comp; };

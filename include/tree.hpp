@@ -107,11 +107,17 @@ class node {
 
     void set_parent(node* x) { parent = x; }
 
-    bool has_parent() { return parent != NULL; }
-    bool is_left() const { return (this == parent->left_child); }
-    bool is_right() const { return (this == parent->right_child); }
+    bool has_parent() const { return parent != NULL; }
+    bool is_left() const {
+        return (has_parent() && this == parent->left_child);
+    }
+    bool is_right() const {
+        return (has_parent() && this == parent->right_child);
+    }
 
     node* rotate_left() {
+        assert(this->right_child);
+
         node* r = this->right_child;
         node* m = r->left_child;
         node* p = this->parent;
@@ -276,7 +282,7 @@ struct AVL_tree_iterator
 
     // EqualityComparable
 
-    pointer operator->() const { return current->get_value(); }
+    pointer operator->() const { return &(current->value); }
 
     /************************
      * LegacyForwardIterator*
@@ -456,6 +462,8 @@ class AVL_tree {
         return true;
     }
 
+    bool insert(const value_type& v) { return insert(v.first, v.second); }
+
     void print(std::string x) { std::cout << x << std::endl; }
 
     void print_tree() {
@@ -470,7 +478,7 @@ class AVL_tree {
     }
 
     iterator begin() { return iterator(root->get_min_node()); }
-    iterator end() { return iterator(root->get_max_node()); }
+    iterator end() { return iterator(root->get_max_node()->get_next_node()); }
 };
 
 }  // namespace ft

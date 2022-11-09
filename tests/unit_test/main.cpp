@@ -16,6 +16,6 @@ void print(std::string x) { std::cout << x << std::endl; }
 #include "./tree.cpp"
 
 int main() {
-    main_map();
     main_tree();
+    main_map();
 }
