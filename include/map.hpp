@@ -138,10 +138,15 @@ class map {
     /********************
      * Capacity         *
      ********************/
-
-    size_t size() const {
+    bool empty() const { return size() == 0; };
+    size_type size() const {
         if (tree) return tree->size();
         return 0;
+    };
+
+    // TODO: テストようなので、最後に修正。
+    size_type max_size() const {
+        return std::numeric_limits<difference_type>::max() / 32;
     };
 
     /********************
