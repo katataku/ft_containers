@@ -1,9 +1,10 @@
 #ifndef TESTS_UNIT_TEST_UTILS_CPP_
 #define TESTS_UNIT_TEST_UTILS_CPP_
 
+#include <assert.h>
+
 #include <iostream>
 #include <string>
-
 void print_bool(bool x) {
     if (x)
         std::cout << "true" << std::endl;

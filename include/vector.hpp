@@ -86,7 +86,7 @@ class vector {
     typename ft::enable_if<!std::is_integral<InputIt>::value, void>::type
     assign(InputIt f, InputIt l) {
         clear();
-        reserve(l - f);
+        reserve(std::distance(f, l));
         insert(begin(), f, l);
     };
 
@@ -170,12 +170,12 @@ class vector {
 
     void insert(iterator position, size_type n, const value_type &val) {
         if (n == 0) return;
-        difference_type pos_diff = position - begin();
+        difference_type pos_diff = std::distance(begin(), position);
         size_type new_size = size() + n;
         if (new_size > capacity()) reserve(recommend(new_size));
         iterator new_position = begin() + pos_diff;
         while (size() < new_size) {
-            construct(++last);
+            construct(last++);
         }
         std::copy_backward(new_position, last - n, last);
         std::fill(new_position, new_position + n, val);
@@ -192,7 +192,7 @@ class vector {
         if (new_size > capacity()) reserve(recommend(new_size));
         iterator new_position = begin() + pos_diff;
         while (size() < new_size) {
-            construct(++last);
+            construct(last++);
         }
         std::copy_backward(new_position, last - n, last);
         std::copy(f, l, new_position);

@@ -306,7 +306,7 @@ static void erase_test() {
     print(*iter);
     iter = numbers.erase(numbers.begin(), numbers.end());
     print_vec(numbers);
-    print(*iter);
+    assert(iter == numbers.end());
 }
 
 static void pop_back_test() {
