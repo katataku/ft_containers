@@ -351,8 +351,12 @@ class AVL_tree {
 
     AVL_tree() : root(NULL){};
     AVL_tree(value_type v) : root(create_node(v)){};
-    AVL_tree(Key k, T t) : root(create_node(value_type(k, t))){};
+    AVL_tree(Key k, T t) : root(create_node(k, t)){};
     ~AVL_tree(){};
+
+    node_ptr create_node(const Key k, T t) {
+        return create_node(value_type(k, t));
+    }
 
     node_ptr create_node(const value_type& val) {
         // 異なる型に対してのAllocatorの型を取得する方法
@@ -473,12 +477,12 @@ class AVL_tree {
 
     ft::pair<iterator, bool> insert(Key key, T value) {
         if (find(key) != NULL)
-            return ft::make_pair<iterator, bool>(find(key), false);
+            return ft::pair<iterator, bool>(find(key), false);
         node_ptr new_parent = search_parent(key);
-        node_ptr new_node = new node<ft::pair<const Key, T> >(key, value);
+        node_ptr new_node = create_node(key, value);
         if (new_parent == NULL) {
             root = new_node;
-            return ft::make_pair<iterator, bool>(new_node, true);
+            return ft::pair<iterator, bool>(new_node, true);
         }
         if (key < new_parent->get_key()) {
             new_parent->set_left(new_node);
@@ -487,7 +491,7 @@ class AVL_tree {
         }
         balance(new_node);
         root = new_node->get_root_node();
-        return ft::make_pair<iterator, bool>(new_node, true);
+        return ft::pair<iterator, bool>(new_node, true);
     }
 
     ft::pair<iterator, bool> insert(const value_type& v) {
