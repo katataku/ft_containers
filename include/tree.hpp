@@ -355,10 +355,13 @@ class AVL_tree {
     ~AVL_tree(){};
 
     node_ptr create_node(const value_type& val) {
+        // 異なる型に対してのAllocatorの型を取得する方法
+        // node用Allocatorの実態はallocを使用。
+        // https://in-neuro.hatenablog.com/entry/2018/08/01/114441
         typedef typename Allocator::template rebind<node_type>::other
             node_allocator_type;
-
         node_allocator_type node_alloc = alloc;
+
         node_ptr new_node = node_alloc.allocate(1);
         node_alloc.construct(new_node, node_type(val.first, val.second));
         return new_node;
