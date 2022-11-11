@@ -1,7 +1,5 @@
-#ifndef INCLUDE_VECTOR_20COPY_HPP_
-#define INCLUDE_VECTOR_20COPY_HPP_
-#ifndef INCLUDE_VECTOR_HPP_
-#define INCLUDE_VECTOR_HPP_
+#ifndef INCLUDE_MAP_HPP_
+#define INCLUDE_MAP_HPP_
 
 #include <memory>
 #include <stdexcept>
@@ -355,6 +353,4 @@ void swap(map<Key, T, Compare, Allocator> &lhs,
 }
 }  // namespace ft
 
-#endif  // INCLUDE_VECTOR_HPP_
-
-#endif  // INCLUDE_VECTOR_20COPY_HPP_
+#endif  //
