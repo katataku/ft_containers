@@ -444,13 +444,14 @@ class AVL_tree {
         return true;
     }
 
-    bool insert(Key key, T value) {
-        if (find(key)) return false;
+    ft::pair<iterator, bool> insert(Key key, T value) {
+        if (find(key) != NULL)
+            return ft::make_pair<iterator, bool>(find(key), false);
         node_ptr new_parent = search_parent(key);
         node_ptr new_node = new node<ft::pair<const Key, T> >(key, value);
         if (new_parent == NULL) {
             root = new_node;
-            return true;
+            return ft::make_pair<iterator, bool>(new_node, true);
         }
         if (key < new_parent->get_key()) {
             new_parent->set_left(new_node);
@@ -459,10 +460,12 @@ class AVL_tree {
         }
         balance(new_node);
         root = new_node->get_root_node();
-        return true;
+        return ft::make_pair<iterator, bool>(new_node, true);
     }
 
-    bool insert(const value_type& v) { return insert(v.first, v.second); }
+    ft::pair<iterator, bool> insert(const value_type& v) {
+        return insert(v.first, v.second);
+    }
 
     void print(std::string x) { std::cout << x << std::endl; }
 
@@ -479,6 +482,10 @@ class AVL_tree {
 
     iterator begin() { return iterator(root->get_min_node()); }
     iterator end() { return iterator(root->get_max_node()->get_next_node()); }
+
+    void clear() {
+        // TODO:メモリから削除を実装
+    }
 };
 
 }  // namespace ft

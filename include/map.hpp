@@ -4,6 +4,7 @@
 #define INCLUDE_VECTOR_HPP_
 
 #include <memory>
+#include <stdexcept>
 
 #include "algorithm.hpp"
 #include "iterator.hpp"
@@ -99,6 +100,20 @@ class map {
     /********************
      * Element Access   *
      ********************/
+    // Tat
+    T &at(const Key &key) {
+        if (find(key) == end()) throw std::out_of_range("out of range");
+        return find(key)->second;
+    }
+    const T &at(const Key &key) const {
+        if (find(key) == end()) throw std::out_of_range("out of range");
+        return find(key)->second;
+    }
+
+    // operator[]
+    T &operator[](const Key &key) {
+        return insert(ft::make_pair(key, T())).first->second;
+    }
 
     /********************
      * Iterators        *
@@ -107,7 +122,7 @@ class map {
         if (!tree) return NULL;
         return tree->begin();
     }
-    iterator begin() const {
+    const_iterator begin() const {
         if (!tree) return NULL;
         return tree->begin();
     }
@@ -115,7 +130,7 @@ class map {
         if (!tree) return NULL;
         return tree->end();
     }
-    iterator end() const {
+    const_iterator end() const {
         if (!tree) return NULL;
         return tree->end();
     }
@@ -135,16 +150,18 @@ class map {
         if (!tree) return NULL;
         return const_reverse_iterator(tree->begin());
     }
+
     /********************
      * Capacity         *
      ********************/
     bool empty() const { return size() == 0; };
+
     size_type size() const {
         if (tree) return tree->size();
         return 0;
     };
 
-    // TODO: テストようなので、最後に修正。
+    // TODO: テスト用なので、最後に修正。
     size_type max_size() const {
         return std::numeric_limits<difference_type>::max() / 32;
     };
@@ -152,26 +169,25 @@ class map {
     /********************
      * Modifiers        *
      ********************/
+    // TODO:impl testcode;
+    void clear() {
+        if (tree) {
+            tree->clear();
+            tree = NULL;
+        }
+    }
 
     // insert
-
-    // TODO: return value;
     // TODO: impl testcode;
     ft::pair<iterator, bool> insert(const value_type &value) {
         if (!tree) tree = new AVL_tree<value_type>();
-
-        if (tree) {
-            if (tree->insert(value)) {
-                return ft::make_pair<iterator, bool>(NULL, true);
-            }
-        }
-        return ft::make_pair<iterator, bool>(NULL, false);
+        return tree->insert(value);
     };
 
     // TODO: impl testcode;
     iterator insert(iterator pos, const value_type &value) {
         (void)pos;
-        return insert(value);
+        return insert(value).first;
     };
 
     // TODO: impl testcode;
@@ -182,10 +198,42 @@ class map {
         }
     };
 
+    // erase
+    iterator erase(iterator pos) {
+        Key key = pos->base->get_key();
+        erase(key);
+        return NULL;
+    }
+    iterator erase(iterator first, iterator last) {
+        for (iterator it = first; it != last; ++it) {
+            Key key = it->base->get_key();
+            erase(key);
+        }
+        return NULL;
+    }
+    size_type erase(const Key &key) { return tree->remove(key) ? 1 : 0; }
+
+    // swap
+    void swap(map &other) {
+        if (*this != other) {
+            tree_type tmp = other.tree;
+            other.tree = this->tree;
+            this->tree = tmp;
+        }
+    }
     /********************
      * Lookup           *
      ********************/
+    // count
+    // TODO: impl testcode;
+    size_type count(const Key &key) const {
+        if (find(key) == end()) {
+            return 0;
+        }
+        return 1;
+    }
 
+    // find
     // TODO: impl;
     iterator find(const Key &key) {
         for (iterator it = begin(); it != end(); ++it) {
@@ -200,7 +248,53 @@ class map {
         return end();
     }
 
+    // equal_range
+    ft::pair<iterator, iterator> equal_range(const Key &key) {
+        return ft::make_pair<iterator, iterator>(lower_bound(key),
+                                                 upper_bound(key));
+    }
+
+    ft::pair<const_iterator, const_iterator> equal_range(const Key &key) const {
+        return ft::make_pair<const_iterator, const_iterator>(lower_bound(key),
+                                                             upper_bound(key));
+    }
+
+    // lower_bound
+    iterator lower_bound(const Key &key) {
+        for (iterator it = begin(); it != end(); ++it) {
+            if (!(*it.first < key)) return it;
+        }
+        return end();
+    }
+    const_iterator lower_bound(const Key &key) const {
+        for (iterator it = begin(); it != end(); ++it) {
+            if (!(*it.first < key)) return it;
+        }
+        return end();
+    }
+
+    // upper_bound
+    iterator upper_bound(const Key &key) {
+        for (iterator it = begin(); it != end(); ++it) {
+            if ((*it.first > key)) return it;
+        }
+        return end();
+    }
+    const_iterator upper_bound(const Key &key) const {
+        for (iterator it = begin(); it != end(); ++it) {
+            if ((*it.first > key)) return it;
+        }
+        return end();
+    }
+
+    /************
+     * Observer *
+     ************/
+    // key_compare
     key_compare key_comp() const { return comp; };
+    // value_comp
+    value_compare value_comp() const { return value_compare(key_comp()); };
+
     /************************
      * Non-Member functions *
      ************************/
@@ -254,8 +348,9 @@ bool operator>=(const map<Key, T, Allocator> &lhs,
     return (!(lhs < rhs));
 }
 
-template <class Key, class T, class Allocator>
-void swap(map<T, Allocator> &lhs, map<Key, T, Allocator> &rhs) {
+template <class Key, class T, class Compare, class Allocator>
+void swap(map<Key, T, Compare, Allocator> &lhs,
+          map<Key, T, Compare, Allocator> &rhs) {
     lhs.swap(rhs);
 }
 }  // namespace ft
