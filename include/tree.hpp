@@ -387,21 +387,19 @@ class AVL_tree {
     size_type size() const { return root->get_size(); };
 
     void balance(node_ptr node) {
-        if (node == NULL) return;
-        if (!node->is_balanced()) {
-            if (node->factor() > 0) {
-                if (node->right_child->factor() < 0) {
-                    node->right_child->rotate_right();
-                }
-                node->rotate_left();
-            } else {
-                if (node->left_child->factor() > 0) {
-                    node->left_child->rotate_left();
-                }
-                node->rotate_right();
+        if (!node) return;
+        if (node->is_balanced()) return;
+        if (node->factor() > 0) {
+            if (node->right_child->factor() < 0) {
+                node->right_child->rotate_right();
             }
+            node->rotate_left();
+        } else {
+            if (node->left_child->factor() > 0) {
+                node->left_child->rotate_left();
+            }
+            node->rotate_right();
         }
-
         balance(node->parent);
     }
 
@@ -475,14 +473,14 @@ class AVL_tree {
         return true;
     }
 
-    ft::pair<iterator, bool> insert(Key key, T value) {
-        if (find(key) != NULL)
-            return ft::pair<iterator, bool>(find(key), false);
+    typedef ft::pair<iterator, bool> insert_ret_type;
+    insert_ret_type insert(Key key, T value) {
+        if (find(key) != NULL) return insert_ret_type(find(key), false);
         node_ptr new_parent = search_parent(key);
         node_ptr new_node = create_node(key, value);
         if (new_parent == NULL) {
             root = new_node;
-            return ft::pair<iterator, bool>(new_node, true);
+            return insert_ret_type(new_node, true);
         }
         if (key < new_parent->get_key()) {
             new_parent->set_left(new_node);
@@ -491,10 +489,10 @@ class AVL_tree {
         }
         balance(new_node);
         root = new_node->get_root_node();
-        return ft::pair<iterator, bool>(new_node, true);
+        return insert_ret_type(new_node, true);
     }
 
-    ft::pair<iterator, bool> insert(const value_type& v) {
+    insert_ret_type insert(const value_type& v) {
         return insert(v.first, v.second);
     }
 
@@ -513,7 +511,6 @@ class AVL_tree {
 
     iterator begin() { return iterator(root->get_min_node()); }
     iterator end() { return iterator(root->get_max_node()->get_next_node()); }
-
     reverse_iterator rbegin() { return reverse_iterator(root->get_max_node()); }
     reverse_iterator rend() {
         return reverse_iterator(root->get_min_node()->get_prev_node());
