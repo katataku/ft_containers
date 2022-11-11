@@ -331,6 +331,7 @@ template <class Key, class T, class Compare = std::less<Key>,
 class AVL_tree {
  public:
     typedef ft::pair<const Key, T> value_type;
+    typedef node<value_type> node_type;
     typedef node<value_type>* node_ptr;
 
     typedef std::size_t size_type;
@@ -349,9 +350,20 @@ class AVL_tree {
     node_ptr root;
 
     AVL_tree() : root(NULL){};
-    AVL_tree(value_type x) : root(new node<value_type>(x)){};
-    AVL_tree(Key k, T v) : root(new node<value_type>(k, v)){};
+    AVL_tree(value_type v) : root(create_node(v)){};
+    AVL_tree(Key k, T t) : root(create_node(value_type(k, t))){};
     ~AVL_tree(){};
+
+    node_ptr create_node(const value_type& val) {
+        typedef typename Allocator::template rebind<node_type>::other
+            node_allocator_type;
+
+        node_allocator_type node_alloc = alloc;
+        node_ptr new_node = node_alloc.allocate(1);
+        node_alloc.construct(new_node, node_type(val.first, val.second));
+        return new_node;
+    }
+
     node_ptr search_parent(Key x) {
         if (root == NULL) return NULL;
         node_ptr cur = root;
