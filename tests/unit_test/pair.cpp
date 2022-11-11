@@ -2,8 +2,8 @@
 #include <string>
 #include <utility>
 
+#include "./utils.cpp"
 #include "utility.hpp"
-
 #define START_TEST_FUNC print(__func__);
 #ifndef LIB
 #define LIB ft
@@ -11,17 +11,7 @@
 
 typedef LIB::pair<int, int> int_pair;
 
-void print_bool(bool x) {
-    if (x)
-        std::cout << "true" << std::endl << std::endl;
-    else
-        std::cout << "false" << std::endl << std::endl;
-}
-
-void print(int x) { std::cout << x << std::endl << std::endl; }
-void print(std::string x) { std::cout << x << std::endl << std::endl; }
-
-void pair_test() {
+static void pair_test() {
     START_TEST_FUNC
     int_pair a;
     int_pair b(2, 1);
@@ -42,7 +32,7 @@ void pair_test() {
     print_bool(c >= b);
 }
 
-void make_pair_test() {
+static void make_pair_test() {
     START_TEST_FUNC
     int_pair a;
     int_pair b;
@@ -56,7 +46,7 @@ void make_pair_test() {
     print_bool(a >= b);
 }
 
-int main() {
+int main_pair() {
     pair_test();
     make_pair_test();
     return 0;

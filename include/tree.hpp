@@ -42,6 +42,8 @@ class node {
           parent(NULL),
           hight(-1){};
 
+    ~node(){};
+
     node& operator=(const node& other) {
         this->value = other.value;
         this->left_child = other.left_child;
@@ -339,7 +341,7 @@ class AVL_tree {
     AVL_tree() : root(NULL){};
     AVL_tree(value_type x) : root(new node<value_type>(x)){};
     AVL_tree(Key k, T v) : root(new node<value_type>(k, v)){};
-
+    ~AVL_tree() { clear(); };
     node_ptr search_parent(Key x) {
         if (root == NULL) return NULL;
         node_ptr cur = root;
@@ -484,7 +486,11 @@ class AVL_tree {
     iterator end() { return iterator(root->get_max_node()->get_next_node()); }
 
     void clear() {
-        // TODO:メモリから削除を実装
+        if (root == NULL) return;
+
+        for (iterator it = begin(); it != end(); ++it) {
+            remove(it->first);
+        }
     }
 };
 

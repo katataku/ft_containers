@@ -1,8 +1,10 @@
+#include "vector.hpp"
+
 #include <iostream>
 #include <string>
 #include <vector>
 
-#include "vector.hpp"
+#include "./utils.cpp"
 
 #define START_TEST_FUNC print(__func__);
 #ifndef LIB
@@ -18,24 +20,14 @@ typedef const value_type& const_reference;
 typedef Allocator::pointer pointer;
 typedef Allocator::const_pointer const_pointer;
 
-void print_bool(bool x) {
-    if (x)
-        std::cout << "true" << std::endl;
-    else
-        std::cout << "false" << std::endl;
-}
-
-void print(int x) { std::cout << x << std::endl; }
-void print(std::string x) { std::cout << x << std::endl; }
-
-void print_vec(int_vector& vec) {
+static void print_vec(int_vector& vec) {
     std::cout << "[" << vec.size() << "/" << vec.capacity() << "]";
     for (int_vector::iterator it = vec.begin(); it != vec.end(); ++it)
         std::cout << *it << " ";
     std::cout << std::endl;
 }
 
-void constructor_test() {
+static void constructor_test() {
     START_TEST_FUNC
     std::allocator<int> alloc;
 
@@ -66,7 +58,7 @@ void constructor_test() {
     print_vec(numbers3_b);
 }
 
-void assign_test() {
+static void assign_test() {
     START_TEST_FUNC
     int_vector numbers0(3);
     print_vec(numbers0);
@@ -85,14 +77,14 @@ void assign_test() {
     print_vec(numbers0);
 }
 
-void at_test() {
+static void at_test() {
     START_TEST_FUNC
     int_vector numbers0(3);
     print(numbers0.at(0));
     print(numbers0.at(1));
     print(numbers0.at(2));
 }
-void operator_test() {
+static void operator_test() {
     START_TEST_FUNC
     int_vector numbers(3);
     numbers[1] = 1;
@@ -105,7 +97,7 @@ void operator_test() {
     print(numbers_const[1]);
     print(numbers_const[2]);
 }
-void front_test() {
+static void front_test() {
     START_TEST_FUNC
     int_vector numbers(3);
     numbers[0] = 2;
@@ -117,7 +109,7 @@ void front_test() {
     print(y);
 }
 
-void back_test() {
+static void back_test() {
     START_TEST_FUNC
     int_vector numbers(3);
     numbers[2] = 2;
@@ -129,7 +121,7 @@ void back_test() {
     print(y);
 }
 
-void data_test() {
+static void data_test() {
     START_TEST_FUNC
     int_vector numbers(3);
     numbers[2] = 2;
@@ -145,7 +137,7 @@ void data_test() {
     print(*(y + 2));
 }
 
-void push_back_test() {
+static void push_back_test() {
     START_TEST_FUNC
     int_vector numbers;
     print_vec(numbers);
@@ -163,7 +155,7 @@ void push_back_test() {
     print_vec(numbers);
 }
 
-void iterator_test() {
+static void iterator_test() {
     START_TEST_FUNC
     int_vector numbers(5);
     numbers[0] = 0;
@@ -180,7 +172,7 @@ void iterator_test() {
         print(*it);
     }
 }
-void empty_test() {
+static void empty_test() {
     START_TEST_FUNC
     int_vector numbers;
     print_bool(numbers.empty());
@@ -193,7 +185,7 @@ void empty_test() {
     print_bool(numbers1.empty());
 }
 
-void size_test() {
+static void size_test() {
     START_TEST_FUNC
     int_vector numbers;
     print(numbers.size());
@@ -206,7 +198,7 @@ void size_test() {
     print(numbers.size());
 }
 
-void max_size_test() {
+static void max_size_test() {
     START_TEST_FUNC
     int_vector numbers;
     print(numbers.max_size());
@@ -218,7 +210,7 @@ void max_size_test() {
     numbers1.push_back(1);
     print(numbers.max_size());
 }
-void reserve_test() {
+static void reserve_test() {
     START_TEST_FUNC
     int_vector numbers(3);
     numbers.reserve(5);
@@ -230,7 +222,7 @@ void reserve_test() {
     print_vec(numbers);
 }
 
-void capacity_test() {
+static void capacity_test() {
     START_TEST_FUNC
     int_vector numbers;
     print(numbers.capacity());
@@ -250,7 +242,7 @@ void capacity_test() {
     print_vec(numbers);
 }
 
-void clear_test() {
+static void clear_test() {
     START_TEST_FUNC
     int_vector numbers;
     print_vec(numbers);
@@ -268,7 +260,7 @@ void clear_test() {
     print_vec(numbers);
 }
 
-void insert_test() {
+static void insert_test() {
     START_TEST_FUNC
     int_vector numbers;
     print_vec(numbers);
@@ -291,7 +283,7 @@ void insert_test() {
     numbers.insert(numbers.begin(), numbers1.begin(), numbers1.end());
     print_vec(numbers);
 }
-void erase_test() {
+static void erase_test() {
     START_TEST_FUNC
     int_vector::iterator iter;
     int_vector numbers;
@@ -317,7 +309,7 @@ void erase_test() {
     print(*iter);
 }
 
-void pop_back_test() {
+static void pop_back_test() {
     START_TEST_FUNC
     int_vector numbers;
     print_vec(numbers);
@@ -337,7 +329,7 @@ void pop_back_test() {
     numbers.pop_back();
     print_vec(numbers);
 }
-void resize_test() {
+static void resize_test() {
     START_TEST_FUNC
     int_vector numbers;
     numbers.resize(5);
@@ -349,7 +341,7 @@ void resize_test() {
     print_vec(numbers);
 }
 
-void swap_test() {
+static void swap_test() {
     START_TEST_FUNC
     int_vector numbers1;
     numbers1.resize(5);
@@ -372,14 +364,14 @@ void swap_test() {
     print(*iter);
 }
 
-void get_allocator_test() {
+static void get_allocator_test() {
     START_TEST_FUNC
     std::allocator<int> alloc;
     int_vector numbers1;
     print_bool(numbers1.get_allocator() == alloc);
 }
 
-void eq_test() {
+static void eq_test() {
     START_TEST_FUNC
     int_vector numbers1;
     numbers1.resize(5);
@@ -394,7 +386,7 @@ void eq_test() {
     print_vec(numbers2);
 }
 
-void comp_op_test() {
+static void comp_op_test() {
     START_TEST_FUNC
     int_vector numbers1;
     numbers1.resize(5);
@@ -425,7 +417,7 @@ void comp_op_test() {
     print_bool(numbers1 <= numbers2);
     print_bool(numbers1 >= numbers2);
 }
-void nonmember_swap_test() {
+static void nonmember_swap_test() {
     START_TEST_FUNC
     int_vector numbers1;
     numbers1.resize(5);
@@ -449,22 +441,23 @@ void nonmember_swap_test() {
 }
 
 template <typename T>
-void func(T t, typename LIB::enable_if<LIB::is_integral<T>::value>::type* = 0) {
+static void func(
+    T t, typename LIB::enable_if<LIB::is_integral<T>::value>::type* = 0) {
     std::cout << t << "は整数だよ" << std::endl;
 }
 
 template <typename T>
-void func(T t,
-          typename LIB::enable_if<!LIB::is_integral<T>::value>::type* = 0) {
+static void func(
+    T t, typename LIB::enable_if<!LIB::is_integral<T>::value>::type* = 0) {
     std::cout << t << "引数は整数じゃないよ" << std::endl;
 }
 
-void is_integral_test() {
+static void is_integral_test() {
     int a = 10;
     func(a);
 }
 
-int main() {
+int main_vector() {
     // member function
     constructor_test();
     eq_test();

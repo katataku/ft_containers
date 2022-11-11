@@ -100,11 +100,13 @@ class map {
      ********************/
     // Tat
     T &at(const Key &key) {
-        if (find(key) == end()) throw std::out_of_range("out of range");
+        if (find(key) == end())
+            throw std::out_of_range("map::at:  key not found");
         return find(key)->second;
     }
     const T &at(const Key &key) const {
-        if (find(key) == end()) throw std::out_of_range("out of range");
+        if (find(key) == end())
+            throw std::out_of_range("map::at:  key not found");
         return find(key)->second;
     }
 
@@ -353,4 +355,4 @@ void swap(map<Key, T, Compare, Allocator> &lhs,
 }
 }  // namespace ft
 
-#endif  //
+#endif  // INCLUDE_MAP_HPP_

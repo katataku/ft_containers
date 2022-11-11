@@ -26,11 +26,11 @@ void tree_remove_test() {
     a.insert(99, 99);
     a.insert(101, 101);
     a.insert(103, 103);
-    a.remove(97);
-    a.remove(98);
+    // a.remove(97);
+    //  a.remove(98);
 
     a.print_tree();
-    a.remove(96);
+    //    a.remove(96);
     a.print_tree();
 
     // a.remove(103);

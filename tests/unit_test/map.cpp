@@ -4,6 +4,8 @@
 #include <map>
 #include <string>
 
+#include "./utils.cpp"
+
 #define START_TEST_FUNC print(__func__);
 #ifndef LIB
 #define LIB ft
@@ -33,7 +35,7 @@ value_type my_make_pair(const key_type k, mapped_type v) {
     return LIB::make_pair<const key_type, mapped_type>(k, v);
 }
 
-void constructor_test() {
+static void constructor_test() {
     START_TEST_FUNC
     Allocator alloc;
 
@@ -57,9 +59,83 @@ void constructor_test() {
     print((numbers0.find(1))->second);
 }
 
+static void at_test() {
+    START_TEST_FUNC
+    int_map numbers0;
+    value_type v = my_make_pair(1, "hello1");
+    print_bool(numbers0.insert(v).second);
+    value_type v2 = my_make_pair(2, "hello2");
+    print_bool(numbers0.insert(v2).second);
+
+    print(numbers0.at(1));
+    print(numbers0.at(2));
+    try {
+        print(numbers0.at(0));
+    } catch (std::exception& e) {
+        print(e.what());
+    }
+}
+
+static void operator_test() {
+    START_TEST_FUNC
+    int_map numbers0;
+    value_type v = my_make_pair(1, "hello1");
+    numbers0.insert(v);
+    value_type v2 = my_make_pair(2, "hello2");
+    numbers0.insert(v2);
+
+    print(numbers0[1]);
+    print(numbers0[2]);
+    print(numbers0[0]);
+}
+
+static void empty_test() {
+    START_TEST_FUNC
+    int_map numbers0;
+    std::cout << "empty:";
+    print_bool(numbers0.empty());
+
+    value_type v = my_make_pair(1, "hello1");
+    numbers0.insert(v);
+    std::cout << "empty:";
+    print_bool(numbers0.empty());
+}
+
+static void size_test() {
+    START_TEST_FUNC
+    int_map numbers0;
+    std::cout << "size:";
+    print(numbers0.size());
+
+    value_type v = my_make_pair(1, "hello1");
+    numbers0.insert(v);
+    std::cout << "size:";
+    print(numbers0.size());
+}
+
+static void max_size_test() {
+    START_TEST_FUNC
+    int_map numbers0;
+    std::cout << "max_size:";
+    print(numbers0.max_size());
+
+    value_type v = my_make_pair(1, "hello1");
+    numbers0.insert(v);
+    std::cout << "max_size:";
+    print(numbers0.max_size());
+}
+
 int main_map() {
-    // member function
+    // Member functions
     constructor_test();
+    // Element access
+    at_test();
+    operator_test();
+    // Capacity
+    empty_test();
+    size_test();
+    max_size_test();
+    // Modifier
 
     return 0;
 }

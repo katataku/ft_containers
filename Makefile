@@ -6,9 +6,7 @@ OBJS = $(SRCS:%.cpp=%.o)
 DEPS = $(OBJS:%.o=%.d)
 HEADERS = $(wildcard include/*.hpp)
 INCS = -Iinclude
-ifdef DEBUG
-	CXXFLAGS += -D DEBUG=true -g -fsanitize=address
-endif
+CXXDEBUGFLAGS += -g -fsanitize=address
 
 TEST_SRCS = tests/unit_test/main.cpp
 FT_MAIN.O = tests/unit_test/ft_main.o
@@ -44,15 +42,15 @@ re: fclean all ## Rebuild
 
 # -------------------------- Rules For Test -------------------------------
 $(FT_MAIN.O): $(TEST_SRCS)
-	$(CXX) $(CXXFLAGS) $(INCS) -o $@ -c $< -DLIB=ft
+	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAGS) $(INCS) -o $@ -c $< -DLIB=ft
 $(STD_MAIN.O): $(TEST_SRCS)
-	$(CXX) $(CXXFLAGS) $(INCS) -o $@ -c $< -DLIB=std
+	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAGS) $(INCS) -o $@ -c $< -DLIB=std
 
 $(FT_CONTAINER): $(FT_MAIN.O) 
-	$(CXX) $(CXXFLAGS) -o $@ $(FT_MAIN.O)
+	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAGS) -o $@ $(FT_MAIN.O)
 
 $(STD_CONTAINER): $(STD_MAIN.O) 
-	$(CXX) $(CXXFLAGS) -o $@ $(STD_MAIN.O)
+	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAGS) -o $@ $(STD_MAIN.O)
 
 .PHONY: test
 test: $(FT_CONTAINER) $(STD_CONTAINER)## Exec unit tests1
@@ -61,7 +59,13 @@ test: $(FT_CONTAINER) $(STD_CONTAINER)## Exec unit tests1
 	cp ./tests/unit_test/ft_container.out ./tests/unit_test/ft_container.md
 	diff $(STD_CONTAINER).out $(FT_CONTAINER).out
 
+.PHONY: leak
+leak: $(FT_CONTAINER)## Exec unit tests1
+	leaks -q -atExit -- $(FT_CONTAINER)
 
+.PHONY: leak_std
+leak_std: $(STD_CONTAINER)## Exec unit tests1
+	leaks -q -atExit -- $(STD_CONTAINER)
 -include $(DEPS)
 
 VALGRIND_TEST_SHELL = ./tests/valgrind/valgrind.sh
