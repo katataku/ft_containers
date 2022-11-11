@@ -326,22 +326,32 @@ bool operator!=(const ft::AVL_tree_iterator<Iter11>& lhs,
     return lhs.base() != rhs.base();
 }
 
-template <class value_type>
+template <class Key, class T, class Compare = std::less<Key>,
+          class Allocator = std::allocator<ft::pair<const Key, T> > >
 class AVL_tree {
  public:
-    typedef typename value_type::first_type Key;
-    typedef typename value_type::second_type T;
-
+    typedef ft::pair<const Key, T> value_type;
     typedef node<value_type>* node_ptr;
-    typedef AVL_tree_iterator<value_type> iterator;
+
     typedef std::size_t size_type;
+
+    typedef Allocator allocator_type;
+
+    typedef value_type& reference;
+    typedef const value_type& const_reference;
+    typedef typename Allocator::pointer pointer;
+    typedef typename Allocator::const_pointer const_pointer;
+    typedef AVL_tree_iterator<value_type> iterator;
+    typedef const iterator const_iterator;
+    typedef ft::reverse_iterator<iterator> reverse_iterator;
+    typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
     node_ptr root;
 
     AVL_tree() : root(NULL){};
     AVL_tree(value_type x) : root(new node<value_type>(x)){};
     AVL_tree(Key k, T v) : root(new node<value_type>(k, v)){};
-    ~AVL_tree() { clear(); };
+    ~AVL_tree(){};
     node_ptr search_parent(Key x) {
         if (root == NULL) return NULL;
         node_ptr cur = root;
@@ -485,11 +495,35 @@ class AVL_tree {
     iterator begin() { return iterator(root->get_min_node()); }
     iterator end() { return iterator(root->get_max_node()->get_next_node()); }
 
+    reverse_iterator rbegin() { return reverse_iterator(root->get_max_node()); }
+    reverse_iterator rend() {
+        return reverse_iterator(root->get_min_node()->get_prev_node());
+    }
+
     void clear() {
         if (root == NULL) return;
 
         for (iterator it = begin(); it != end(); ++it) {
             remove(it->first);
+        }
+    }
+
+ private:
+    // アロケーターの値
+    allocator_type alloc;
+
+    typedef std::allocator_traits<allocator_type> traits;
+
+    pointer allocate(size_type n) { return traits::allocate(alloc, n); }
+    void deallocate(pointer p, size_type n) { traits::deallocate(alloc, p, n); }
+    void construct(pointer ptr) { traits::construct(alloc, ptr); }
+    void construct(pointer ptr, const_reference value) {
+        traits::construct(alloc, ptr, value);
+    }
+    void destroy(pointer ptr) { traits::destroy(alloc, ptr); }
+    void destroy_until(reverse_iterator rend) {
+        for (reverse_iterator riter = rbegin(); riter != rend; ++riter) {
+            destroy(&*riter);
         }
     }
 };

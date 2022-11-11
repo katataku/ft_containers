@@ -23,7 +23,7 @@ class map {
     typedef ft::pair<const Key, T> value_type;
 
  private:
-    typedef AVL_tree<value_type> *tree_type;
+    typedef AVL_tree<Key, T> *tree_type;
 
  public:
     typedef std::size_t size_type;

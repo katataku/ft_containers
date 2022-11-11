@@ -12,7 +12,7 @@
 #endif
 
 typedef ft::pair<const int, int> int_int_pair;
-typedef ft::AVL_tree<int_int_pair> AVLtree;
+typedef ft::AVL_tree<int, int> AVLtree;
 
 void tree_remove_test() {
     START_TEST_FUNC
