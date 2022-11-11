@@ -347,8 +347,6 @@ class AVL_tree {
     typedef ft::reverse_iterator<iterator> reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
-    node_ptr root;
-
     AVL_tree() : root(NULL){};
     AVL_tree(value_type v) : root(create_node(v)){};
     AVL_tree(Key k, T t) : root(create_node(k, t)){};
@@ -371,24 +369,11 @@ class AVL_tree {
         return new_node;
     }
 
-    node_ptr search_parent(Key x) {
-        if (root == NULL) return NULL;
-        node_ptr cur = root;
-        while (1) {
-            if (x < cur->get_key()) {
-                if (cur->left_child == NULL) return cur;
-                cur = cur->left_child;
-            } else {
-                if (cur->right_child == NULL) return cur;
-                cur = cur->right_child;
-            }
-        }
-    }
     size_type size() const { return root->get_size(); };
 
-    void balance(node_ptr node) {
-        if (!node) return;
-        if (node->is_balanced()) return;
+    node_ptr balance(node_ptr node) {
+        if (!node) return NULL;
+        if (node->is_balanced()) return node->get_root_node();
         if (node->factor() > 0) {
             if (node->right_child->factor() < 0) {
                 node->right_child->rotate_right();
@@ -400,7 +385,7 @@ class AVL_tree {
             }
             node->rotate_right();
         }
-        balance(node->parent);
+        return balance(node->parent);
     }
 
     node_ptr find(Key x) {
@@ -416,60 +401,34 @@ class AVL_tree {
         }
     }
 
-    void print_nodeinfo(node_ptr tar) {
-        std::cout << "tar:" << tar->value << std::endl;
-        std::cout << "tar->parent:" << tar->parent->value << std::endl;
-        std::cout << "tar->left_child:" << tar->left_child->value << std::endl;
-        std::cout << "tar->right_child:" << tar->right_child->value
-                  << std::endl;
-    }
-
     bool remove(Key x) {
         node_ptr tar = find(x);
-        if (tar == NULL) return false;
-        if (tar->left_child == NULL) {
-            if (tar->has_parent()) {
-                if (tar->is_left()) {
-                    tar->parent->set_left(tar->right_child);
-                } else {
-                    tar->parent->set_right(tar->right_child);
-                }
+        if (tar) return false;
+        node_ptr l = tar->left_child;
+        node_ptr r = tar->right_child;
+        node_ptr p = tar->parent;
+        if (l) {
+            if (p) {
+                p->set_child(r, tar->is_left());
             }
-            if (tar->right_child) {
-                tar->right_child->parent = tar->parent;
-                balance(tar->right_child);
-                root = tar->right_child->get_root_node();
+            if (r) {
+                r->parent = p;
+                root = balance(r);
             }
-            if (tar->has_parent()) {
-                balance(tar->parent);
-                root = tar->parent->get_root_node();
-            }
-            delete tar;
-
+            root = balance(p);
         } else {
-            node_ptr replace_node = tar->left_child->get_max_node();
+            node_ptr replace_node = l->get_max_node();
             if (replace_node->has_parent()) {
-                if (replace_node->is_left()) {
-                    replace_node->parent->set_left(NULL);
-                } else {
-                    replace_node->parent->set_right(NULL);
-                }
+                replace_node->parent->set_child(NULL, replace_node->is_left());
             }
-            replace_node->parent = NULL;
-            if (tar->has_parent()) {
-                if (tar->is_left()) {
-                    tar->parent->set_left(replace_node);
-                } else {
-                    tar->parent->set_right(replace_node);
-                }
+            if (p) {
+                p->set_child(replace_node, tar->is_left());
             }
-            replace_node->set_left(tar->left_child);
-            replace_node->set_right(tar->right_child);
-            balance(replace_node);
-            root = replace_node->get_root_node();
-
-            delete tar;
+            replace_node->set_left(l);
+            replace_node->set_right(r);
+            root = balance(replace_node);
         }
+        delete tar;
         return true;
     }
 
@@ -482,21 +441,14 @@ class AVL_tree {
             root = new_node;
             return insert_ret_type(new_node, true);
         }
-        if (key < new_parent->get_key()) {
-            new_parent->set_left(new_node);
-        } else {
-            new_parent->set_right(new_node);
-        }
-        balance(new_node);
-        root = new_node->get_root_node();
+        new_parent->set_child(new_node, key < new_parent->get_key());
+        root = balance(new_node);
         return insert_ret_type(new_node, true);
     }
 
     insert_ret_type insert(const value_type& v) {
         return insert(v.first, v.second);
     }
-
-    void print(std::string x) { std::cout << x << std::endl; }
 
     void print_tree() {
         print("-----------------");
@@ -525,6 +477,8 @@ class AVL_tree {
     }
 
  private:
+    node_ptr root;
+
     // アロケーターの値
     allocator_type alloc;
 
@@ -541,6 +495,29 @@ class AVL_tree {
         for (reverse_iterator riter = rbegin(); riter != rend; ++riter) {
             destroy(&*riter);
         }
+    }
+
+    node_ptr search_parent(Key x) {
+        if (root == NULL) return NULL;
+        node_ptr cur = root;
+        while (1) {
+            if (x < cur->get_key()) {
+                if (cur->left_child == NULL) return cur;
+                cur = cur->left_child;
+            } else {
+                if (cur->right_child == NULL) return cur;
+                cur = cur->right_child;
+            }
+        }
+    }
+
+    void print(std::string x) { std::cout << x << std::endl; }
+    void print_nodeinfo(node_ptr tar) {
+        std::cout << "tar:" << tar->value << std::endl;
+        std::cout << "tar->parent:" << tar->parent->value << std::endl;
+        std::cout << "tar->left_child:" << tar->left_child->value << std::endl;
+        std::cout << "tar->right_child:" << tar->right_child->value
+                  << std::endl;
     }
 };
 

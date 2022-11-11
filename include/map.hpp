@@ -180,7 +180,7 @@ class map {
     // insert
     // TODO: impl testcode;
     ft::pair<iterator, bool> insert(const value_type &value) {
-        if (!tree) tree = new AVL_tree<value_type>();
+        if (!tree) tree = new AVL_tree<Key, T>();
         return tree->insert(value);
     };
 
