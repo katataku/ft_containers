@@ -62,8 +62,14 @@ class node {
         if (this->right_child) size += right_child->get_size();
         return size;
     }
+    void clear_hight() {
+        if (this->hight != -1) {
+            this->hight = -1;
+            if (this->parent) this->parent->clear_hight();
+        }
+    }
     int get_hight() {
-        this->update_hight();
+        if (this->hight == -1) this->update_hight();
         return hight;
     }
 
@@ -92,7 +98,7 @@ class node {
     node* get_parent() { return parent; }
 
     void set_left(node* x) {
-        left_child = x;
+        this->left_child = x;
         if (x) x->parent = this;
     }
     void set_right(node* x) {
@@ -118,8 +124,6 @@ class node {
     }
 
     node* rotate_left() {
-        assert(this->right_child);
-
         node* r = this->right_child;
         node* m = r->left_child;
         node* p = this->parent;
@@ -130,9 +134,9 @@ class node {
         this->set_right(m);
         if (r) r->set_left(this);
 
-        this->update_hight();
-        if (r) r->update_hight();
-        if (p) p->update_hight();
+        this->clear_hight();
+        if (r) r->clear_hight();
+        if (p) p->clear_hight();
         return r;
     }
 
@@ -147,9 +151,9 @@ class node {
         this->set_left(m);
         if (l) l->set_right(this);
 
-        this->update_hight();
-        if (l) l->update_hight();
-        if (p) p->update_hight();
+        this->clear_hight();
+        if (l) l->clear_hight();
+        if (p) p->clear_hight();
         return l;
     }
 
@@ -182,8 +186,8 @@ class node {
     }
 
     node* get_prev_node() {
-        if (this->left) {
-            return (this->left->get_max_node());
+        if (this->left_child) {
+            return (this->left_child->get_max_node());
         } else {
             node* cur = this;
             while (cur->is_left()) {
@@ -296,7 +300,7 @@ struct AVL_tree_iterator
     // Multipass guarantee
     // trivial: nothing todo.
 
-    // Equality and inequality comparison\
+    // Equality and inequality comparison
     // describe in Non-member functions.
 
     /******************************
@@ -348,9 +352,13 @@ class AVL_tree {
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
     AVL_tree() : end_(create_node()) { set_root(NULL); };
+
     AVL_tree(value_type v) : end_(create_node()) { set_root(create_node(v)); };
     AVL_tree(Key k, T t) : end_(create_node()) { set_root(create_node(k, t)); };
-    ~AVL_tree(){};
+    ~AVL_tree() {
+        clear();
+        delete_node(end_);
+    };
 
     node_ptr create_node() { return create_node(value_type(Key(), T())); }
 
@@ -369,6 +377,15 @@ class AVL_tree {
         node_ptr new_node = node_alloc.allocate(1);
         node_alloc.construct(new_node, node_type(val.first, val.second));
         return new_node;
+    }
+
+    void delete_node(node_ptr node) {
+        typedef typename Allocator::template rebind<node_type>::other
+            node_allocator_type;
+        node_allocator_type node_alloc = alloc;
+
+        node_alloc.destroy(node);
+        node_alloc.deallocate(node, 1);
     }
 
     size_type size() const {
@@ -438,7 +455,7 @@ class AVL_tree {
             replace_node->set_parent(p);
             set_root(balance(replace_node));
         }
-        delete tar;
+        delete_node(tar);
         return true;
     }
 
@@ -483,10 +500,11 @@ class AVL_tree {
     reverse_iterator rend() { return reverse_iterator(end_); }
 
     void clear() {
-        if (get_root() == NULL) return;
-
-        for (iterator it = begin(); it != end(); ++it) {
-            remove(it->first);
+        iterator it = begin();
+        while (it != end()) {
+            Key key = it.base()->get_key();
+            ++it;
+            remove(key);
         }
     }
 
@@ -505,15 +523,15 @@ class AVL_tree {
     // アロケーターの値
     allocator_type alloc;
 
-    typedef std::allocator_traits<allocator_type> traits;
-
-    pointer allocate(size_type n) { return traits::allocate(alloc, n); }
-    void deallocate(pointer p, size_type n) { traits::deallocate(alloc, p, n); }
-    void construct(pointer ptr) { traits::construct(alloc, ptr); }
-    void construct(pointer ptr, const_reference value) {
-        traits::construct(alloc, ptr, value);
+    pointer allocate(size_type n) { return allocator_type::allocate(alloc, n); }
+    void deallocate(pointer p, size_type n) {
+        allocator_type::deallocate(alloc, p, n);
     }
-    void destroy(pointer ptr) { traits::destroy(alloc, ptr); }
+    void construct(pointer ptr) { allocator_type::construct(alloc, ptr); }
+    void construct(pointer ptr, const_reference value) {
+        allocator_type::construct(alloc, ptr, value);
+    }
+    void destroy(pointer ptr) { allocator_type::destroy(alloc, ptr); }
     void destroy_until(reverse_iterator rend) {
         for (reverse_iterator riter = rbegin(); riter != rend; ++riter) {
             destroy(&*riter);
@@ -521,8 +539,8 @@ class AVL_tree {
     }
 
     node_ptr search_parent(Key x) {
-        if (get_root() == NULL) return NULL;
         node_ptr cur = get_root();
+        if (cur == NULL) return NULL;
         while (1) {
             if (x < cur->get_key()) {
                 if (cur->left_child == NULL) return cur;

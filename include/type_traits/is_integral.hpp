@@ -1,6 +1,8 @@
 #ifndef INCLUDE_TYPE_TRAITS_IS_INTEGRAL_HPP_
 #define INCLUDE_TYPE_TRAITS_IS_INTEGRAL_HPP_
 
+// #include <uchar.h>
+
 #include "integral_constant.hpp"
 #include "remove_cv.hpp"
 

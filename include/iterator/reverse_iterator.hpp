@@ -1,9 +1,10 @@
 #ifndef INCLUDE_ITERATOR_REVERSE_ITERATOR_HPP_
 #define INCLUDE_ITERATOR_REVERSE_ITERATOR_HPP_
 
+#include <memory>
+
 #include "iterator.hpp"
 #include "iterator_traits.hpp"
-
 namespace ft {
 
 /********************
@@ -38,19 +39,22 @@ class reverse_iterator
     explicit reverse_iterator(iterator_type __x) : current(__x){};
     template <class U>
     reverse_iterator(const reverse_iterator<U>& other)
-        : current(other.base()){};
+        : current(other.base()) {}
 
     template <class U>
     reverse_iterator& operator=(const reverse_iterator<U>& other) {
         current = other.base();
         return *this;
-    };
+    }
     iterator_type base() const { return current; };
     reference operator*() const {
         Iter __tmp = current;
         return *--__tmp;
     };
-    pointer operator->() const { return std::addressof(operator*()); };
+    pointer operator->() const {
+        // return std::addressof(operator*());
+        return &(operator*());
+    };
 
     reference operator[](difference_type n) const { return *(*this + n); };
 

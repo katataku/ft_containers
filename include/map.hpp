@@ -1,6 +1,7 @@
 #ifndef INCLUDE_MAP_HPP_
 #define INCLUDE_MAP_HPP_
 
+#include <limits>
 #include <memory>
 #include <stdexcept>
 
@@ -23,7 +24,8 @@ class map {
     typedef ft::pair<const Key, T> value_type;
 
  private:
-    typedef AVL_tree<Key, T> *tree_type;
+    typedef AVL_tree<Key, T> tree_type;
+    typedef tree_type *tree_ptr;
 
  public:
     typedef std::size_t size_type;
@@ -59,30 +61,29 @@ class map {
      * Member functions *
      ********************/
     // Constructor
-    map() : tree(NULL), comp(Compare()), alloc(allocator_type()){};
+    map() : tree_(create_tree()), comp(Compare()), alloc(allocator_type()){};
 
     explicit map(const Compare &comp, const Allocator &alloc = Allocator())
-        : tree(NULL), comp(comp), alloc(alloc){};
+        : tree_(create_tree()), comp(comp), alloc(alloc){};
 
     template <class InputIt>
     map(InputIt first, InputIt last, const Compare &comp = Compare(),
         const Allocator &alloc = Allocator())
-        : tree(NULL), comp(comp), alloc(alloc) {
+        : tree_(create_tree()), comp(comp), alloc(alloc) {
         for (InputIt i = first; i != last; ++i) {
             insert(*i);
         }
     }
 
-    map(const map &other) : tree(NULL), comp(Compare()), alloc(other.alloc) {
+    map(const map &other)
+        : tree_(create_tree()), comp(Compare()), alloc(other.alloc) {
         for (iterator it = other.begin(); it != other.end(); ++it) {
             insert(*it);
         }
     };
 
     // Destructor
-    ~map(){
-
-    };
+    ~map() { delete_tree(tree_); };
 
     map &operator=(const map &other) {
         for (iterator it = other.begin(); it != other.end(); ++it) {
@@ -116,36 +117,36 @@ class map {
      * Iterators        *
      ********************/
     iterator begin() {
-        if (!tree) return NULL;
-        return tree->begin();
+        if (!tree_) return NULL;
+        return tree_->begin();
     }
     const_iterator begin() const {
-        if (!tree) return NULL;
-        return tree->begin();
+        if (!tree_) return NULL;
+        return tree_->begin();
     }
     iterator end() {
-        if (!tree) return NULL;
-        return tree->end();
+        if (!tree_) return NULL;
+        return tree_->end();
     }
     const_iterator end() const {
-        if (!tree) return NULL;
-        return tree->end();
+        if (!tree_) return NULL;
+        return tree_->end();
     }
     reverse_iterator rbegin() {
-        if (!tree) return NULL;
-        return reverse_iterator(tree->end());
+        if (!tree_) return NULL;
+        return reverse_iterator(tree_->end());
     }
     reverse_iterator rend() {
-        if (!tree) return NULL;
-        return reverse_iterator(tree->begin());
+        if (!tree_) return NULL;
+        return reverse_iterator(tree_->begin());
     }
     const_reverse_iterator rbegin() const {
-        if (!tree) return NULL;
-        return const_reverse_iterator(tree->end());
+        if (!tree_) return NULL;
+        return const_reverse_iterator(tree_->end());
     }
     const_reverse_iterator rend() const {
-        if (!tree) return NULL;
-        return const_reverse_iterator(tree->begin());
+        if (!tree_) return NULL;
+        return const_reverse_iterator(tree_->begin());
     }
 
     /********************
@@ -154,7 +155,7 @@ class map {
     bool empty() const { return size() == 0; };
 
     size_type size() const {
-        if (tree) return tree->size();
+        if (tree_) return tree_->size();
         return 0;
     };
 
@@ -168,32 +169,31 @@ class map {
      ********************/
     // TODO:impl testcode;
     void clear() {
-        if (tree) {
-            tree->clear();
-            tree = NULL;
+        if (tree_) {
+            tree_->clear();
+            tree_ = NULL;
         }
     }
 
     // insert
-    // TODO: impl testcode;
     ft::pair<iterator, bool> insert(const value_type &value) {
-        if (!tree) tree = new AVL_tree<Key, T>();
-        return tree->insert(value);
+        if (tree_ == NULL) {
+            tree_ = create_tree();
+        }
+        return tree_->insert(value);
     };
 
-    // TODO: impl testcode;
     iterator insert(iterator pos, const value_type &value) {
         (void)pos;
         return insert(value).first;
     };
 
-    // TODO: impl testcode;
     template <class InputIt>
     void insert(InputIt first, InputIt last) {
         for (InputIt it = first; it != last; ++it) {
             insert(*it);
         }
-    };
+    }
 
     // erase
     iterator erase(iterator pos) {
@@ -210,14 +210,14 @@ class map {
         }
         return NULL;
     }
-    size_type erase(const Key &key) { return tree->remove(key) ? 1 : 0; }
+    size_type erase(const Key &key) { return tree_->remove(key) ? 1 : 0; }
 
     // swap
     void swap(map &other) {
         if (*this != other) {
-            tree_type tmp = other.tree;
-            other.tree = this->tree;
-            this->tree = tmp;
+            tree_ptr tmp = other.tree_;
+            other.tree_ = this->tree_;
+            this->tree_ = tmp;
         }
     }
     /********************
@@ -297,18 +297,38 @@ class map {
      * Non-Member functions *
      ************************/
 
-    tree_type get_tree() { return tree; }
+    tree_ptr get_tree() { return tree_; }
 
-    tree_type tree;
+    tree_ptr tree_;
 
  private:
     key_compare comp;
     // アロケーターの値
     allocator_type alloc;
 
-    typedef std::allocator_traits<allocator_type> traits;
+    tree_ptr create_tree() {
+        // 異なる型に対してのAllocatorの型を取得する方法
+        // node用Allocatorの実態はallocを使用。
+        // https://in-neuro.hatenablog.com/entry/2018/08/01/114441
+        typedef typename Allocator::template rebind<tree_type>::other
+            tree_allocator_type;
+        tree_allocator_type tree_alloc = alloc;
 
-    pointer allocate(size_type n) { return traits::allocate(alloc, n); }
+        tree_ptr new_tree = tree_alloc.allocate(1);
+        tree_alloc.construct(new_tree);
+        return new_tree;
+    }
+
+    void delete_tree(tree_ptr tree) {
+        typedef typename Allocator::template rebind<tree_type>::other
+            tree_allocator_type;
+        tree_allocator_type tree_alloc = alloc;
+
+        tree_alloc.destroy(tree);
+        tree_alloc.deallocate(tree, 1);
+    }
+
+    pointer allocate(size_type n) { return allocator_type::allocate(alloc, n); }
 };
 
 template <class Key, class T, class Allocator>

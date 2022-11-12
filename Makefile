@@ -1,12 +1,12 @@
 NAME = containers
 CXX = c++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -pedantic -MMD -MP
+CXXFLAGS = -Wall -Wextra -std=c++98 -pedantic -MMD -MP -g
 SRCS = $(wildcard srcs/*/*.cpp) containers.cpp
 OBJS = $(SRCS:%.cpp=%.o)
 DEPS = $(OBJS:%.o=%.d)
 HEADERS = $(wildcard include/*.hpp)
 INCS = -Iinclude
-CXXDEBUGFLAGS += -g -fsanitize=address
+#CXXDEBUGFLAGS += -g -fsanitize=address -pg
 
 TEST_SRCS = tests/unit_test/main.cpp
 FT_MAIN.O = tests/unit_test/ft_main.o

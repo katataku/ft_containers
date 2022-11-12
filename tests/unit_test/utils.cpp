@@ -8,6 +8,7 @@ void print_start_test_func(std::string func_name) {
 
 #include <assert.h>
 
+#include <cassert>
 #include <iostream>
 #include <string>
 void print_bool(bool x) {
