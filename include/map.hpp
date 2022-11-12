@@ -200,13 +200,14 @@ class map {
 
     // erase
     iterator erase(iterator pos) {
-        Key key = pos->base->get_key();
+        Key key = pos.base()->get_key();
+        std::cout << key << std::endl;
         erase(key);
         return NULL;
     }
     iterator erase(iterator first, iterator last) {
         for (iterator it = first; it != last; ++it) {
-            Key key = it->base->get_key();
+            Key key = it.base()->get_key();
             erase(key);
         }
         return NULL;
@@ -299,8 +300,11 @@ class map {
      * Non-Member functions *
      ************************/
 
- private:
+    tree_type get_tree() { return tree; }
+
     tree_type tree;
+
+ private:
     key_compare comp;
     // アロケーターの値
     allocator_type alloc;

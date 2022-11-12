@@ -61,6 +61,8 @@ test: $(FT_CONTAINER) $(STD_CONTAINER)## Exec unit tests1
 
 .PHONY: leak
 leak: $(FT_CONTAINER)## Exec unit tests1
+	$(FT_CONTAINER)| tee $(FT_CONTAINER_OUTPUT)
+	cp ./tests/unit_test/ft_container.out ./tests/unit_test/ft_container.md
 	leaks -q -atExit -- $(FT_CONTAINER)
 
 .PHONY: leak_std

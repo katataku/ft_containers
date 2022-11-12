@@ -4,7 +4,6 @@
 
 #include "./utils.cpp"
 #include "utility.hpp"
-#define START_TEST_FUNC print(__func__);
 #ifndef LIB
 #define LIB ft
 #endif

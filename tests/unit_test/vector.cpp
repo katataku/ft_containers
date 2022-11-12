@@ -6,7 +6,6 @@
 
 #include "./utils.cpp"
 
-#define START_TEST_FUNC print(__func__);
 #ifndef LIB
 #define LIB ft
 #endif
@@ -458,6 +457,7 @@ static void is_integral_test() {
 }
 
 int main_vector() {
+    START_TEST_FUNC
     // member function
     constructor_test();
     eq_test();

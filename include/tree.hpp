@@ -373,19 +373,23 @@ class AVL_tree {
 
     node_ptr balance(node_ptr node) {
         if (!node) return NULL;
-        if (node->is_balanced()) return node->get_root_node();
-        if (node->factor() > 0) {
-            if (node->right_child->factor() < 0) {
-                node->right_child->rotate_right();
+        if (!node->is_balanced()) {
+            if (node->factor() > 0) {
+                if (node->right_child->factor() < 0) {
+                    node->right_child->rotate_right();
+                }
+                node->rotate_left();
+            } else {
+                if (node->left_child->factor() > 0) {
+                    node->left_child->rotate_left();
+                }
+                node->rotate_right();
             }
-            node->rotate_left();
-        } else {
-            if (node->left_child->factor() > 0) {
-                node->left_child->rotate_left();
-            }
-            node->rotate_right();
         }
-        return balance(node->parent);
+        if (node->parent == NULL)
+            return node;
+        else
+            return balance(node->parent);
     }
 
     node_ptr find(Key x) {
@@ -403,11 +407,11 @@ class AVL_tree {
 
     bool remove(Key x) {
         node_ptr tar = find(x);
-        if (tar) return false;
+        if (tar == NULL) return false;
         node_ptr l = tar->left_child;
         node_ptr r = tar->right_child;
         node_ptr p = tar->parent;
-        if (l) {
+        if (l == NULL) {
             if (p) p->set_child(r, tar->is_left());
             if (r) {
                 r->parent = p;
@@ -420,8 +424,9 @@ class AVL_tree {
                 replace_node->parent->set_child(NULL, replace_node->is_left());
             }
             if (p) p->set_child(replace_node, tar->is_left());
-            replace_node->set_left(l);
+            replace_node->set_left(tar->left_child);
             replace_node->set_right(r);
+            replace_node->set_parent(p);
             root = balance(replace_node);
         }
         delete tar;
