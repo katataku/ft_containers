@@ -21,6 +21,9 @@ typedef int_map::mapped_type mapped_type;
 typedef int_map::value_type value_type;
 typedef std::allocator<value_type> Allocator;
 
+typedef int_map::iterator iterator;
+typedef int_map::const_iterator const_iterator;
+
 void print_map(int_map& map) {
     std::cout << "empty:";
     print_bool(map.empty());
@@ -171,10 +174,184 @@ static void erase_map_test() {
     numbers0.erase(numbers0.begin(), ++(numbers0.begin()));
     print_map(numbers0);
     // numbers0.tree->print_tree();
-
-    print(numbers0.erase(3));
+    numbers0.erase(numbers0.begin(), numbers0.end());
     print_map(numbers0);
+
+    // print(numbers0.erase(3));
+    // print_map(numbers0);
     // numbers0.tree->print_tree();
+}
+
+static void swap_map_test() {
+    START_TEST_FUNC
+    Allocator alloc;
+
+    int_map numbers0;
+    value_type v = my_make_pair(1, "hello1");
+    value_type v2 = my_make_pair(2, "hello2");
+    value_type v3 = my_make_pair(3, "hello3");
+    value_type v4 = my_make_pair(4, "hello4");
+    numbers0.insert(v);
+    numbers0.insert(v2);
+    numbers0.insert(v3);
+    numbers0.insert(v4);
+
+    int_map numbers1;
+    numbers0.swap(numbers1);
+    print_map(numbers0);
+    print_map(numbers1);
+
+    LIB::swap(numbers0, numbers1);
+    print_map(numbers0);
+    print_map(numbers1);
+}
+
+static void count_map_test() {
+    START_TEST_FUNC
+    Allocator alloc;
+
+    int_map numbers0;
+    print(numbers0.count(1));
+    value_type v = my_make_pair(1, "hello1");
+    numbers0.insert(v);
+    print(numbers0.count(1));
+}
+
+static void find_map_test() {
+    START_TEST_FUNC
+    Allocator alloc;
+
+    int_map numbers0;
+    iterator it = numbers0.begin();
+    print_bool(numbers0.find(1) == it);
+    const_iterator cit = numbers0.begin();
+    print_bool(numbers0.find(1) == cit);
+
+    value_type v = my_make_pair(1, "hello1");
+    numbers0.insert(v);
+    print(numbers0.find(1)->first);
+}
+
+static void lower_bound_map_test() {
+    START_TEST_FUNC
+    Allocator alloc;
+
+    int_map numbers0;
+    value_type v = my_make_pair(1, "hello1");
+    value_type v2 = my_make_pair(2, "hello2");
+    value_type v3 = my_make_pair(3, "hello3");
+    value_type v4 = my_make_pair(4, "hello4");
+    numbers0.insert(v);
+    numbers0.insert(v2);
+    numbers0.insert(v3);
+    numbers0.insert(v4);
+
+    iterator lb = numbers0.lower_bound(2);
+    for (iterator it = lb; it != numbers0.end(); ++it) {
+        std::cout << (*it).first << ":" << (*it).second << " ";
+    }
+    std::cout << std::endl;
+}
+
+static void upper_bound_map_test() {
+    START_TEST_FUNC
+    Allocator alloc;
+
+    int_map numbers0;
+    value_type v = my_make_pair(1, "hello1");
+    value_type v2 = my_make_pair(2, "hello2");
+    value_type v3 = my_make_pair(3, "hello3");
+    value_type v4 = my_make_pair(4, "hello4");
+    numbers0.insert(v);
+    numbers0.insert(v2);
+    numbers0.insert(v3);
+    numbers0.insert(v4);
+
+    iterator ub = numbers0.lower_bound(2);
+    for (iterator it = numbers0.begin(); it != ub; ++it) {
+        std::cout << (*it).first << ":" << (*it).second << " ";
+    }
+    std::cout << std::endl;
+}
+
+static void equal_range_map_test() {
+    START_TEST_FUNC
+    Allocator alloc;
+
+    int_map numbers0;
+    value_type v = my_make_pair(1, "hello1");
+    value_type v2 = my_make_pair(2, "hello2");
+    value_type v3 = my_make_pair(3, "hello3");
+    value_type v4 = my_make_pair(4, "hello4");
+    numbers0.insert(v);
+    numbers0.insert(v2);
+    numbers0.insert(v3);
+    numbers0.insert(v4);
+
+    LIB::pair<iterator, iterator> eq = numbers0.equal_range(2);
+    for (iterator it = eq.first; it != eq.second; ++it) {
+        std::cout << (*it).first << ":" << (*it).second << " ";
+    }
+    std::cout << std::endl;
+}
+
+static void key_comp_map_test() {
+    START_TEST_FUNC
+    Allocator alloc;
+
+    int_map numbers0;
+    int_map::key_compare c = numbers0.key_comp();
+    print_bool(c(1, 0));
+    print_bool(c(1, 1));
+    print_bool(c(1, 2));
+}
+static void value_comp_map_test() {
+    START_TEST_FUNC
+    Allocator alloc;
+
+    value_type v = my_make_pair(1, "hello1");
+    value_type v2 = my_make_pair(2, "hello2");
+    value_type v3 = my_make_pair(3, "hello3");
+
+    int_map numbers0;
+    int_map::value_compare c = numbers0.value_comp();
+    print_bool(c(v2, v));
+    print_bool(c(v2, v2));
+    print_bool(c(v2, v3));
+}
+
+static void operator_comp_map_test() {
+    START_TEST_FUNC
+    Allocator alloc;
+
+    int_map numbers0;
+    int_map numbers1;
+    print_bool(numbers0 == numbers1);
+    print_bool(numbers0 != numbers1);
+    print_bool(numbers0 < numbers1);
+    print_bool(numbers0 > numbers1);
+    print_bool(numbers0 <= numbers1);
+    print_bool(numbers0 >= numbers1);
+
+    value_type v = my_make_pair(1, "hello1");
+    numbers0.insert(v);
+    print_bool(numbers0 == numbers1);
+    print_bool(numbers0 != numbers1);
+    print_bool(numbers0 < numbers1);
+    print_bool(numbers0 > numbers1);
+    print_bool(numbers0 <= numbers1);
+    print_bool(numbers0 >= numbers1);
+}
+
+static void load_map_test() {
+    START_TEST_FUNC
+    Allocator alloc;
+
+    int_map numbers0;
+    for (int i = 0; i < 20000; i++) {
+        value_type v = my_make_pair(i, "hello");
+        numbers0.insert(v);
+    }
 }
 
 int main_map() {
@@ -191,6 +368,21 @@ int main_map() {
     // Modifier
     insert_map_test();
     erase_map_test();
+    swap_map_test();
+    // Lookup
+    count_map_test();
+    find_map_test();
+    equal_range_map_test();
+    lower_bound_map_test();
+    upper_bound_map_test();
+    // Observers
+    key_comp_map_test();
+    value_comp_map_test();
 
+    // Non-member functions
+    operator_comp_map_test();
+
+    // load test
+    load_map_test();
     return 0;
 }

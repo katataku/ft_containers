@@ -371,7 +371,10 @@ class AVL_tree {
         return new_node;
     }
 
-    size_type size() const { return get_root()->get_size(); };
+    size_type size() const {
+        if (get_root() == NULL) return 0;
+        return get_root()->get_size();
+    };
 
     node_ptr balance(node_ptr node) {
         if (!node) return NULL;
@@ -468,9 +471,13 @@ class AVL_tree {
         print("-----------------");
     }
 
-    iterator begin() { return iterator(get_root()->get_min_node()); }
+    iterator begin() {
+        if (get_root() == NULL) return end();
+        return iterator(get_root()->get_min_node());
+    }
     iterator end() { return iterator(end_); }
     reverse_iterator rbegin() {
+        if (get_root() == NULL) return rend();
         return reverse_iterator(get_root()->get_max_node());
     }
     reverse_iterator rend() { return reverse_iterator(end_); }

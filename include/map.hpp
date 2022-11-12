@@ -43,10 +43,7 @@ class map {
      * Member Class     *
      ********************/
     class value_compare : std::binary_function<value_type, value_type, bool> {
-     public:
-        typedef bool result_type;
-        typedef value_type first_argument_type;
-        typedef value_type second_argument_type;
+        friend class map;
 
      protected:
         Compare comp;
@@ -244,7 +241,7 @@ class map {
         return end();
     }
     const_iterator find(const Key &key) const {
-        for (const_iterator it = begin(); it != end(); ++it) {
+        for (iterator it = begin(); it != end(); ++it) {
             if (it->first == key) return it;
         }
         return end();
@@ -252,25 +249,24 @@ class map {
 
     // equal_range
     ft::pair<iterator, iterator> equal_range(const Key &key) {
-        return ft::make_pair<iterator, iterator>(lower_bound(key),
-                                                 upper_bound(key));
+        return ft::pair<iterator, iterator>(lower_bound(key), upper_bound(key));
     }
 
     ft::pair<const_iterator, const_iterator> equal_range(const Key &key) const {
-        return ft::make_pair<const_iterator, const_iterator>(lower_bound(key),
-                                                             upper_bound(key));
+        return ft::pair<const_iterator, const_iterator>(lower_bound(key),
+                                                        upper_bound(key));
     }
 
     // lower_bound
     iterator lower_bound(const Key &key) {
         for (iterator it = begin(); it != end(); ++it) {
-            if (!(*it.first < key)) return it;
+            if (!(it.base()->get_key() < key)) return it;
         }
         return end();
     }
     const_iterator lower_bound(const Key &key) const {
         for (iterator it = begin(); it != end(); ++it) {
-            if (!(*it.first < key)) return it;
+            if (!(it.base()->get_key() < key)) return it;
         }
         return end();
     }
@@ -278,13 +274,13 @@ class map {
     // upper_bound
     iterator upper_bound(const Key &key) {
         for (iterator it = begin(); it != end(); ++it) {
-            if ((*it.first > key)) return it;
+            if ((it.base()->get_key() > key)) return it;
         }
         return end();
     }
     const_iterator upper_bound(const Key &key) const {
         for (iterator it = begin(); it != end(); ++it) {
-            if ((*it.first > key)) return it;
+            if ((it.base()->get_key() > key)) return it;
         }
         return end();
     }
