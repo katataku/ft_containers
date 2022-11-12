@@ -73,7 +73,7 @@ class node {
         hight = 1 + std::max(left_height, right_height);
     }
 
-    int factor() const {
+    int factor() {
         size_t left_height = left_child ? left_child->get_hight() : 0;
         size_t right_height = right_child ? right_child->get_hight() : 0;
         return (right_height - left_height);
@@ -347,10 +347,12 @@ class AVL_tree {
     typedef ft::reverse_iterator<iterator> reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
-    AVL_tree() : root(NULL){};
-    AVL_tree(value_type v) : root(create_node(v)){};
-    AVL_tree(Key k, T t) : root(create_node(k, t)){};
+    AVL_tree() : end_(create_node()) { set_root(NULL); };
+    AVL_tree(value_type v) : end_(create_node()) { set_root(create_node(v)); };
+    AVL_tree(Key k, T t) : end_(create_node()) { set_root(create_node(k, t)); };
     ~AVL_tree(){};
+
+    node_ptr create_node() { return create_node(value_type(Key(), T())); }
 
     node_ptr create_node(const Key k, T t) {
         return create_node(value_type(k, t));
@@ -369,10 +371,14 @@ class AVL_tree {
         return new_node;
     }
 
-    size_type size() const { return root->get_size(); };
+    size_type size() const { return get_root()->get_size(); };
 
     node_ptr balance(node_ptr node) {
         if (!node) return NULL;
+        if (node == end_) {
+            root_ = end_->left_child;
+            return get_root();
+        };
         if (!node->is_balanced()) {
             if (node->factor() > 0) {
                 if (node->right_child->factor() < 0) {
@@ -393,7 +399,7 @@ class AVL_tree {
     }
 
     node_ptr find(Key x) {
-        node_ptr cur = root;
+        node_ptr cur = get_root();
         while (1) {
             if (cur == NULL) return NULL;
             if (cur->get_key() == x) return cur;
@@ -415,9 +421,9 @@ class AVL_tree {
             if (p) p->set_child(r, tar->is_left());
             if (r) {
                 r->parent = p;
-                root = balance(r);
+                balance(r);
             }
-            root = balance(p);
+            set_root(balance(p));
         } else {
             node_ptr replace_node = l->get_max_node();
             if (replace_node->has_parent()) {
@@ -427,7 +433,7 @@ class AVL_tree {
             replace_node->set_left(tar->left_child);
             replace_node->set_right(r);
             replace_node->set_parent(p);
-            root = balance(replace_node);
+            set_root(balance(replace_node));
         }
         delete tar;
         return true;
@@ -439,11 +445,11 @@ class AVL_tree {
         node_ptr new_parent = search_parent(key);
         node_ptr new_node = create_node(key, value);
         if (new_parent == NULL) {
-            root = new_node;
+            set_root(new_node);
             return insert_ret_type(new_node, true);
         }
         new_parent->set_child(new_node, key < new_parent->get_key());
-        root = balance(new_node);
+        set_root(balance(new_node));
         return insert_ret_type(new_node, true);
     }
 
@@ -457,20 +463,20 @@ class AVL_tree {
         print("-----------------");
         print("```mermaid");
         print("graph TB;");
-        root->print_node();
+        get_root()->print_node();
         print("```");
         print("-----------------");
     }
 
-    iterator begin() { return iterator(root->get_min_node()); }
-    iterator end() { return iterator(root->get_max_node()->get_next_node()); }
-    reverse_iterator rbegin() { return reverse_iterator(root->get_max_node()); }
-    reverse_iterator rend() {
-        return reverse_iterator(root->get_min_node()->get_prev_node());
+    iterator begin() { return iterator(get_root()->get_min_node()); }
+    iterator end() { return iterator(end_); }
+    reverse_iterator rbegin() {
+        return reverse_iterator(get_root()->get_max_node());
     }
+    reverse_iterator rend() { return reverse_iterator(end_); }
 
     void clear() {
-        if (root == NULL) return;
+        if (get_root() == NULL) return;
 
         for (iterator it = begin(); it != end(); ++it) {
             remove(it->first);
@@ -478,7 +484,16 @@ class AVL_tree {
     }
 
  private:
-    node_ptr root;
+    node_ptr root_;
+    // rootの親としてend用の擬似ノードを配置する。
+    node_ptr end_;
+
+    node_ptr get_root() const { return root_; }
+    node_ptr set_root(node_ptr root) {
+        root_ = root;
+        end_->set_left(root);
+        return root;
+    }
 
     // アロケーターの値
     allocator_type alloc;
@@ -499,8 +514,8 @@ class AVL_tree {
     }
 
     node_ptr search_parent(Key x) {
-        if (root == NULL) return NULL;
-        node_ptr cur = root;
+        if (get_root() == NULL) return NULL;
+        node_ptr cur = get_root();
         while (1) {
             if (x < cur->get_key()) {
                 if (cur->left_child == NULL) return cur;

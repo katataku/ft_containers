@@ -67,7 +67,6 @@ static void at_map_test() {
     value_type v2 = my_make_pair(2, "hello2");
     print_bool(numbers0.insert(v2).second);
 
-    print(numbers0.at(1));
     print(numbers0.at(2));
     try {
         print(numbers0.at(0));
