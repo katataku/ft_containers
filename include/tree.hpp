@@ -408,9 +408,7 @@ class AVL_tree {
         node_ptr r = tar->right_child;
         node_ptr p = tar->parent;
         if (l) {
-            if (p) {
-                p->set_child(r, tar->is_left());
-            }
+            if (p) p->set_child(r, tar->is_left());
             if (r) {
                 r->parent = p;
                 root = balance(r);
@@ -421,9 +419,7 @@ class AVL_tree {
             if (replace_node->has_parent()) {
                 replace_node->parent->set_child(NULL, replace_node->is_left());
             }
-            if (p) {
-                p->set_child(replace_node, tar->is_left());
-            }
+            if (p) p->set_child(replace_node, tar->is_left());
             replace_node->set_left(l);
             replace_node->set_right(r);
             root = balance(replace_node);
