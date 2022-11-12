@@ -168,12 +168,12 @@ static void erase_map_test() {
     print_map(numbers0);
     // numbers0.tree->print_tree();
 
-    // numbers0.erase(numbers0.begin(), ++(numbers0.begin()));
-    // print_map(numbers0);
+    numbers0.erase(numbers0.begin(), ++(numbers0.begin()));
+    print_map(numbers0);
     // numbers0.tree->print_tree();
 
-    // print(numbers0.erase(3));
-    // print_map(numbers0);
+    print(numbers0.erase(3));
+    print_map(numbers0);
     // numbers0.tree->print_tree();
 }
 

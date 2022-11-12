@@ -205,8 +205,10 @@ class map {
         return NULL;
     }
     iterator erase(iterator first, iterator last) {
-        for (iterator it = first; it != last; ++it) {
+        iterator it = first;
+        while (it != last) {
             Key key = it.base()->get_key();
+            ++it;
             erase(key);
         }
         return NULL;
