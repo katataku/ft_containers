@@ -167,7 +167,7 @@ static void erase_map_test() {
 
     numbers0.erase(numbers0.begin());
     print_map(numbers0);
-    numbers0.tree->print_tree();
+    // numbers0.tree->print_tree();
 
     // numbers0.erase(numbers0.begin(), ++(numbers0.begin()));
     // print_map(numbers0);

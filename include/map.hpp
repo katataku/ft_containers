@@ -201,7 +201,6 @@ class map {
     // erase
     iterator erase(iterator pos) {
         Key key = pos.base()->get_key();
-        std::cout << key << std::endl;
         erase(key);
         return NULL;
     }
