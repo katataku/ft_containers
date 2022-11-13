@@ -1,6 +1,7 @@
 #ifndef INCLUDE_VECTOR_HPP_
 #define INCLUDE_VECTOR_HPP_
 
+#include <iterator>
 #include <memory>
 
 #include "algorithm.hpp"
@@ -22,7 +23,7 @@ class vector {
     typedef typename Allocator::pointer pointer;
     typedef typename Allocator::const_pointer const_pointer;
     typedef pointer iterator;
-    typedef const_pointer const_iterator;
+    typedef const pointer const_iterator;
     typedef ft::reverse_iterator<iterator> reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 

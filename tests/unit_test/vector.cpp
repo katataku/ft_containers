@@ -463,6 +463,26 @@ static void load_vec_test() {
     for (int i = 0; i < LOAD_FACTOR_NUM; i++) numbers.push_back(i);
 }
 
+static void iterator_compatible_vec_test() {
+    START_TEST_FUNC
+
+    int_vector numbers0;
+    numbers0.insert(numbers0.end(), 1);
+    numbers0.insert(numbers0.end(), 2);
+    numbers0.insert(numbers0.end(), 3);
+    numbers0.insert(numbers0.end(), 4);
+
+    int_vector::iterator it = numbers0.begin();
+    int_vector::const_iterator cit = it;
+    std::cout << *cit << std::endl;
+
+    // stdでは動かないが、ft::vectorでは動く。
+    //  int_vector::const_iterator cit2 = numbers0.begin();
+    //  int_vector::iterator it2;
+    //  it2 = const_cast<int_vector::iterator>(cit2);
+    //  std::cout << *it2 << std::endl;
+}
+
 int main_vector() {
     START_TEST_FUNC
     // member function
@@ -504,5 +524,7 @@ int main_vector() {
     is_integral_test();
 
     load_vec_test();
+
+    iterator_compatible_vec_test();
     return 0;
 }
