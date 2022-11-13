@@ -28,6 +28,7 @@ class node {
     node* right_child;
     node* parent;
     int hight;
+    int factor_;
 
     node()
         : value(value_type()),
@@ -35,7 +36,8 @@ class node {
           left_child(NULL),
           right_child(NULL),
           parent(NULL),
-          hight(-1){};
+          hight(-1),
+          factor_(-1){};
 
     node(Key k, T v)
         : value(value_type(k, v)),
@@ -43,7 +45,8 @@ class node {
           left_child(NULL),
           right_child(NULL),
           parent(NULL),
-          hight(-1){};
+          hight(-1),
+          factor_(-1){};
 
     ~node(){};
 
@@ -69,6 +72,7 @@ class node {
     void clear_hight() {
         if (this->hight != -1) {
             this->hight = -1;
+            this->factor_ = -1;
             if (this->parent) this->parent->clear_hight();
         }
     }
@@ -83,10 +87,13 @@ class node {
         hight = 1 + std::max(left_height, right_height);
     }
 
-    int factor() {
-        size_t left_height = left_child ? left_child->get_hight() : 0;
-        size_t right_height = right_child ? right_child->get_hight() : 0;
-        return (right_height - left_height);
+    int get_factor() {
+        if (factor_ == -1) {
+            size_t left_height = left_child ? left_child->get_hight() : 0;
+            size_t right_height = right_child ? right_child->get_hight() : 0;
+            factor_ = (right_height - left_height);
+        }
+        return factor_;
     }
 
     node* get_left() const { return left_child; }
@@ -398,16 +405,16 @@ class AVL_tree {
                 root_ = end_->left_child;
                 return get_root();
             };
-            f = node->factor();
+            f = node->get_factor();
             is_balanced = -1 <= f && f <= 1;
             if (!is_balanced) {
                 if (f > 0) {
-                    if (node->right_child->factor() < 0) {
+                    if (node->right_child->get_factor() < 0) {
                         node->right_child->rotate_right();
                     }
                     node->rotate_left();
                 } else {
-                    if (node->left_child->factor() > 0) {
+                    if (node->left_child->get_factor() > 0) {
                         node->left_child->rotate_left();
                     }
                     node->rotate_right();
