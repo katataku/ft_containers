@@ -344,9 +344,12 @@ static void load_map_test() {
     Allocator alloc;
 
     int_map numbers0;
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 20000; i++) {
         value_type v = my_make_pair(i, "hello");
         numbers0.insert(v);
+    }
+    for (iterator it = numbers0.begin(); it != numbers0.end(); it++) {
+        std::cout << it->first << std::endl;
     }
 }
 

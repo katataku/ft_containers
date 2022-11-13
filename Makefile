@@ -1,6 +1,6 @@
 NAME = containers
 CXX = c++
-CXXFLAGS = -Wall -Wextra -std=c++98 -pedantic -MMD -MP -g
+CXXFLAGS = -Wall -Wextra -std=c++98 -pedantic -MMD -MP
 SRCS = $(wildcard srcs/*/*.cpp) containers.cpp
 OBJS = $(SRCS:%.cpp=%.o)
 DEPS = $(OBJS:%.o=%.d)
@@ -8,7 +8,7 @@ HEADERS = $(wildcard include/*.hpp)
 INCS = -Iinclude
 #CXXDEBUGFLAGS += -g -fsanitize=address -pg
 
-TEST_SRCS = tests/unit_test/main.cpp
+TEST_SRCS = tests/unit_test/main.cpp 
 FT_MAIN.O = tests/unit_test/ft_main.o
 STD_MAIN.O = tests/unit_test/std_main.o
 TEST_OBJS = $(FT_MAIN.O) $(STD_MAIN.O)
@@ -68,7 +68,16 @@ leak: $(FT_CONTAINER)## Exec unit tests1
 .PHONY: leak_std
 leak_std: $(STD_CONTAINER)## Exec unit tests1
 	leaks -q -atExit -- $(STD_CONTAINER)
+
+.PHONY: bench
+bench: $(FT_CONTAINER) $(STD_CONTAINER)## Exec unit tests1
+	time $(STD_CONTAINER) > /dev/null
+	time $(FT_CONTAINER)  > /dev/null
+
+
 -include $(DEPS)
+
+
 
 VALGRIND_TEST_SHELL = ./tests/valgrind/valgrind.sh
 .PHONY: valgrind

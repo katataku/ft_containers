@@ -85,12 +85,9 @@ class node {
         return (right_height - left_height);
     }
 
-    bool is_balanced() { return -1 <= factor() && factor() <= 1; }
-
-    node* get_root_node() {
-        node* cur = this;
-        while (cur->parent != NULL) cur = cur->parent;
-        return cur;
+    bool is_balanced() {
+        int f = factor();
+        return -1 <= f && f <= 1;
     }
 
     node* get_left() { return left_child; }
@@ -411,6 +408,7 @@ class AVL_tree {
                 }
                 node->rotate_right();
             }
+            return get_root();
         }
         if (node->parent == NULL)
             return node;
@@ -469,6 +467,7 @@ class AVL_tree {
             return insert_ret_type(new_node, true);
         }
         new_parent->set_child(new_node, key < new_parent->get_key());
+        new_node->clear_hight();
         set_root(balance(new_node));
         return insert_ret_type(new_node, true);
     }
