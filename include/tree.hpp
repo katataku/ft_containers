@@ -23,6 +23,7 @@ class node {
     // typedef ft::pair<const Key, T> value_type;
 
     value_type value;
+    Key key;
     node* left_child;
     node* right_child;
     node* parent;
@@ -30,6 +31,7 @@ class node {
 
     node()
         : value(value_type()),
+          key(Key()),
           left_child(NULL),
           right_child(NULL),
           parent(NULL),
@@ -37,6 +39,7 @@ class node {
 
     node(Key k, T v)
         : value(value_type(k, v)),
+          key(k),
           left_child(NULL),
           right_child(NULL),
           parent(NULL),
@@ -46,6 +49,7 @@ class node {
 
     node& operator=(const node& other) {
         this->value = other.value;
+        this->key = other.key;
         this->left_child = other.left_child;
         this->right_child = other.right_child;
         this->parent = other.parent;
@@ -53,10 +57,10 @@ class node {
         return *this;
     }
 
-    Key get_key() const { return this->value.first; }
+    Key get_key() const { return this->key; }
     value_type get_value() const { return this->value; }
 
-    size_t get_size() {
+    size_t get_size() const {
         size_t size = 1;
         if (this->left_child) size += left_child->get_size();
         if (this->right_child) size += right_child->get_size();
@@ -85,14 +89,9 @@ class node {
         return (right_height - left_height);
     }
 
-    bool is_balanced() {
-        int f = factor();
-        return -1 <= f && f <= 1;
-    }
-
-    node* get_left() { return left_child; }
-    node* get_right() { return right_child; }
-    node* get_parent() { return parent; }
+    node* get_left() const { return left_child; }
+    node* get_right() const { return right_child; }
+    node* get_parent() const { return parent; }
 
     void set_left(node* x) {
         this->left_child = x;
@@ -391,37 +390,44 @@ class AVL_tree {
     };
 
     node_ptr balance(node_ptr node) {
+        int f;
+        bool is_balanced;
         if (!node) return NULL;
-        if (node == end_) {
-            root_ = end_->left_child;
-            return get_root();
-        };
-        if (!node->is_balanced()) {
-            if (node->factor() > 0) {
-                if (node->right_child->factor() < 0) {
-                    node->right_child->rotate_right();
+        while (1) {
+            if (node == end_) {
+                root_ = end_->left_child;
+                return get_root();
+            };
+            f = node->factor();
+            is_balanced = -1 <= f && f <= 1;
+            if (!is_balanced) {
+                if (f > 0) {
+                    if (node->right_child->factor() < 0) {
+                        node->right_child->rotate_right();
+                    }
+                    node->rotate_left();
+                } else {
+                    if (node->left_child->factor() > 0) {
+                        node->left_child->rotate_left();
+                    }
+                    node->rotate_right();
                 }
-                node->rotate_left();
-            } else {
-                if (node->left_child->factor() > 0) {
-                    node->left_child->rotate_left();
-                }
-                node->rotate_right();
+                return get_root();
             }
-            return get_root();
+            if (node->parent == NULL)
+                return node;
+            else
+                node = node->parent;
         }
-        if (node->parent == NULL)
-            return node;
-        else
-            return balance(node->parent);
     }
 
     node_ptr find(Key x) {
         node_ptr cur = get_root();
         while (1) {
             if (cur == NULL) return NULL;
-            if (cur->get_key() == x) return cur;
-            if (x < cur->get_key()) {
+            Key k = cur->get_key();
+            if (k == x) return cur;
+            if (x < k) {
                 cur = cur->left_child;
             } else {
                 cur = cur->right_child;
