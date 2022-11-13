@@ -132,16 +132,6 @@ dc-down: ## Down docker container
 .PHONY: dc-re
 dc-re: dc-down dc-build dc-up ## Rebuild docker image and run container
 
-PHONY: dc-bench
-dc-bench:
-	docker exec -it $(CONTAINER) /bin/bash -c \
-	"cd tests/bench &&\
-	g++ mybenchmark.cc -std=c++11 -isystem benchmark/include -Lbenchmark/build/src -lbenchmark -lpthread -o mybenchmark &&\
-	./mybenchmark --benchmark_repetitions=1  > STD.out &&\
-	./mybenchmark --benchmark_repetitions=1 > FT.out &&\
-	paste FT.out STD.out > join.out  &&\
-	sed '1,3d' ./join.out |awk '{print $1,",", $2 / $8}' > result.csv\
-	"
 # ---------------------------- Rules For Help -----------------------------
 
 .PHONY: help
