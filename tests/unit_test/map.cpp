@@ -23,6 +23,7 @@ typedef int_map::iterator iterator;
 typedef int_map::const_iterator const_iterator;
 
 void print_map(int_map& map) {
+    std::cout << "-print map-" << std::endl;
     std::cout << "empty:";
     print_bool(map.empty());
     std::cout << "[" << map.size() << "]";
@@ -175,6 +176,8 @@ static void erase_map_test() {
 
 static void swap_map_test() {
     START_TEST_FUNC
+    iterator it;
+    iterator it_keep;
 
     int_map numbers0;
     value_type v = my_make_pair(1, "hello1");
@@ -186,14 +189,40 @@ static void swap_map_test() {
     numbers0.insert(v3);
     numbers0.insert(v4);
 
+    print("  map.swap test");
     int_map numbers1;
+    print_map(numbers0);
+    print_map(numbers1);
     numbers0.swap(numbers1);
     print_map(numbers0);
     print_map(numbers1);
 
+    it_keep = numbers1.begin();
+    (*it_keep).second = "before";
+    numbers0.swap(numbers1);
+    it = numbers0.begin();
+    print((*it).second);
+    print((*it_keep).second);
+    (*it_keep).second = "after";
+    print((*it).second);
+    print((*it_keep).second);
+
+    print("  LIB::swap test");
+    print_map(numbers0);
+    print_map(numbers1);
     LIB::swap(numbers0, numbers1);
     print_map(numbers0);
     print_map(numbers1);
+
+    it_keep = numbers1.begin();
+    (*it_keep).second = "before";
+    numbers0.swap(numbers1);
+    it = numbers0.begin();
+    print((*it).second);
+    print((*it_keep).second);
+    (*it_keep).second = "after";
+    print((*it).second);
+    print((*it_keep).second);
 }
 
 static void count_map_test() {
