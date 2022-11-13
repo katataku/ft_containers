@@ -123,9 +123,12 @@ static void insert_map_test() {
 
     value_type v = my_make_pair(1, "hello1");
     print_bool(numbers0.insert(v).second);
+    print_bool(numbers0.insert(v).second);
     print_map(numbers0);
 
     value_type v2 = my_make_pair(2, "hello2");
+    numbers0.insert(numbers0.end(), v2);
+    print_map(numbers0);
     numbers0.insert(numbers0.end(), v2);
     print_map(numbers0);
 
@@ -134,6 +137,8 @@ static void insert_map_test() {
     value_type v4 = my_make_pair(4, "hello4");
     numbers1.insert(v3);
     numbers1.insert(v4);
+    numbers0.insert(numbers1.begin(), numbers1.end());
+    print_map(numbers0);
     numbers0.insert(numbers1.begin(), numbers1.end());
     print_map(numbers0);
 }
