@@ -12,14 +12,12 @@
 #endif
 
 typedef int Key;
-typedef std::string T;
 
 typedef LIB::map<int, std::string> int_map;
 
 typedef int_map::key_type key_type;
 typedef int_map::mapped_type mapped_type;
 typedef int_map::value_type value_type;
-typedef std::allocator<value_type> Allocator;
 
 typedef int_map::iterator iterator;
 typedef int_map::const_iterator const_iterator;
@@ -40,7 +38,6 @@ value_type my_make_pair(const key_type k, mapped_type v) {
 
 static void constructor_map_test() {
     START_TEST_FUNC
-    Allocator alloc;
 
     int_map numbers0;
     print_map(numbers0);
@@ -119,7 +116,6 @@ static void max_size_map_test() {
 
 static void insert_map_test() {
     START_TEST_FUNC
-    Allocator alloc;
 
     // map();
     int_map numbers0;
@@ -144,7 +140,6 @@ static void insert_map_test() {
 /*
 static void erase_map_test() {
     START_TEST_FUNC
-    Allocator alloc;
 
     int_map numbers0;
     value_type v = my_make_pair(1, "hello1");
@@ -175,7 +170,6 @@ static void erase_map_test() {
 
 static void swap_map_test() {
     START_TEST_FUNC
-    Allocator alloc;
 
     int_map numbers0;
     value_type v = my_make_pair(1, "hello1");
@@ -199,7 +193,6 @@ static void swap_map_test() {
 
 static void count_map_test() {
     START_TEST_FUNC
-    Allocator alloc;
 
     int_map numbers0;
     print(numbers0.count(1));
@@ -210,7 +203,6 @@ static void count_map_test() {
 
 static void find_map_test() {
     START_TEST_FUNC
-    Allocator alloc;
 
     int_map numbers0;
     iterator it = numbers0.begin();
@@ -225,7 +217,6 @@ static void find_map_test() {
 
 static void lower_bound_map_test() {
     START_TEST_FUNC
-    Allocator alloc;
 
     int_map numbers0;
     value_type v = my_make_pair(1, "hello1");
@@ -246,7 +237,6 @@ static void lower_bound_map_test() {
 
 static void upper_bound_map_test() {
     START_TEST_FUNC
-    Allocator alloc;
 
     int_map numbers0;
     value_type v = my_make_pair(1, "hello1");
@@ -267,7 +257,6 @@ static void upper_bound_map_test() {
 
 static void equal_range_map_test() {
     START_TEST_FUNC
-    Allocator alloc;
 
     int_map numbers0;
     value_type v = my_make_pair(1, "hello1");
@@ -288,7 +277,6 @@ static void equal_range_map_test() {
 
 static void key_comp_map_test() {
     START_TEST_FUNC
-    Allocator alloc;
 
     int_map numbers0;
     int_map::key_compare c = numbers0.key_comp();
@@ -298,7 +286,6 @@ static void key_comp_map_test() {
 }
 static void value_comp_map_test() {
     START_TEST_FUNC
-    Allocator alloc;
 
     value_type v = my_make_pair(1, "hello1");
     value_type v2 = my_make_pair(2, "hello2");
@@ -313,7 +300,6 @@ static void value_comp_map_test() {
 
 static void operator_comp_map_test() {
     START_TEST_FUNC
-    Allocator alloc;
 
     int_map numbers0;
     int_map numbers1;
@@ -341,12 +327,23 @@ static void operator_comp_map_test() {
 
 static void load_map_test() {
     START_TEST_FUNC
-    Allocator alloc;
 
     int_map numbers0;
-    for (int i = 0; i < 20000; i++) {
+    for (int i = 0; i < LOAD_FACTOR_NUM; i++) {
         value_type v = my_make_pair(i, "hello");
         numbers0.insert(v);
+    }
+
+    for (iterator it = numbers0.begin(); it != numbers0.end(); it++) {
+        std::cout << it->first << std::endl;
+    }
+    for (iterator it = numbers0.begin(); it != numbers0.end();) {
+        Key k = it->first;
+        it++;
+        numbers0.erase(k);
+    }
+    for (iterator it = numbers0.begin(); it != numbers0.end(); it++) {
+        std::cout << it->first << std::endl;
     }
 }
 

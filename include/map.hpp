@@ -331,41 +331,41 @@ class map {
     pointer allocate(size_type n) { return allocator_type::allocate(alloc, n); }
 };
 
-template <class Key, class T, class Allocator>
-bool operator==(const map<Key, T, Allocator> &lhs,
-                const map<Key, T, Allocator> &rhs) {
+template <class Key, class T, class Compare, class Allocator>
+bool operator==(const map<Key, T, Compare, Allocator> &lhs,
+                const map<Key, T, Compare, Allocator> &rhs) {
     return (lhs.size() == rhs.size() &&
             ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 }
 
-template <class Key, class T, class Allocator>
-bool operator!=(const map<Key, T, Allocator> &lhs,
-                const map<Key, T, Allocator> &rhs) {
+template <class Key, class T, class Compare, class Allocator>
+bool operator!=(const map<Key, T, Compare, Allocator> &lhs,
+                const map<Key, T, Compare, Allocator> &rhs) {
     return (!(lhs == rhs));
 }
 
-template <class Key, class T, class Allocator>
-bool operator<(const map<Key, T, Allocator> &lhs,
-               const map<Key, T, Allocator> &rhs) {
+template <class Key, class T, class Compare, class Allocator>
+bool operator<(const map<Key, T, Compare, Allocator> &lhs,
+               const map<Key, T, Compare, Allocator> &rhs) {
     return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
                                         rhs.end()));
 }
 
-template <class Key, class T, class Allocator>
-bool operator<=(const map<Key, T, Allocator> &lhs,
-                const map<Key, T, Allocator> &rhs) {
+template <class Key, class T, class Compare, class Allocator>
+bool operator<=(const map<Key, T, Compare, Allocator> &lhs,
+                const map<Key, T, Compare, Allocator> &rhs) {
     return (!(lhs > rhs));
 }
 
-template <class Key, class T, class Allocator>
-bool operator>(const map<Key, T, Allocator> &lhs,
-               const map<Key, T, Allocator> &rhs) {
+template <class Key, class T, class Compare, class Allocator>
+bool operator>(const map<Key, T, Compare, Allocator> &lhs,
+               const map<Key, T, Compare, Allocator> &rhs) {
     return (rhs < lhs);
 }
 
-template <class Key, class T, class Allocator>
-bool operator>=(const map<Key, T, Allocator> &lhs,
-                const map<Key, T, Allocator> &rhs) {
+template <class Key, class T, class Compare, class Allocator>
+bool operator>=(const map<Key, T, Compare, Allocator> &lhs,
+                const map<Key, T, Compare, Allocator> &rhs) {
     return (!(lhs < rhs));
 }
 

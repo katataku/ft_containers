@@ -13,9 +13,8 @@
 typedef int T;
 typedef std::allocator<T> Allocator;
 typedef LIB::vector<int> int_vector;
-typedef T value_type;
-typedef value_type& reference;
-typedef const value_type& const_reference;
+typedef T& reference;
+typedef const T& const_reference;
 typedef Allocator::pointer pointer;
 typedef Allocator::const_pointer const_pointer;
 
@@ -456,6 +455,14 @@ static void is_integral_test() {
     func(a);
 }
 
+static void load_vec_test() {
+    START_TEST_FUNC
+
+    int_vector numbers;
+
+    for (int i = 0; i < LOAD_FACTOR_NUM; i++) numbers.push_back(i);
+}
+
 int main_vector() {
     START_TEST_FUNC
     // member function
@@ -495,5 +502,7 @@ int main_vector() {
     nonmember_swap_test();
 
     is_integral_test();
+
+    load_vec_test();
     return 0;
 }
