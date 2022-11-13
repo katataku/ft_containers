@@ -1,7 +1,7 @@
 NAME = containers
 CXX = c++
 CXXFLAGS = -Wall -Wextra -std=c++98 -pedantic -MMD -MP -O3
-SRCS = $(wildcard srcs/*/*.cpp) containers.cpp
+SRCS = $(wildcard srcs/*/*.cpp) tests/subject_test/main.cpp
 OBJS = $(SRCS:%.cpp=%.o)
 DEPS = $(OBJS:%.o=%.d)
 HEADERS = $(wildcard include/*.hpp)
@@ -58,6 +58,9 @@ test: $(FT_CONTAINER) $(STD_CONTAINER)## Exec unit tests1
 	$(FT_CONTAINER)| tee $(FT_CONTAINER_OUTPUT)
 	cp ./tests/unit_test/ft_container.out ./tests/unit_test/ft_container.md
 	diff $(STD_CONTAINER).out $(FT_CONTAINER).out
+
+.PHONY: test-re
+test-re: fclean test## Exec unit tests1
 
 .PHONY: leak
 leak: $(FT_CONTAINER)## Exec unit tests1

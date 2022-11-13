@@ -1,14 +1,13 @@
 #include <deque>
 #include <iostream>
 #include <string>
-#if 1  // CREATE A REAL STL EXAMPLE
+#if 0  // CREATE A REAL STL EXAMPLE
 #include <map>
 #include <stack>
 #include <vector>
 namespace ft = std;
 #else
 #include <map.hpp>
-#include <stack.hpp>
 #include <vector.hpp>
 #endif
 
@@ -23,23 +22,6 @@ struct Buffer {
 
 #define COUNT (MAX_RAM / (int)sizeof(Buffer))
 
-template <typename T>
-class MutantStack : public ft::stack<T> {
- public:
-    MutantStack() {}
-    MutantStack(const MutantStack<T>& src) { *this = src; }
-    MutantStack<T>& operator=(const MutantStack<T>& rhs) {
-        this->c = rhs.c;
-        return *this;
-    }
-    ~MutantStack() {}
-
-    typedef typename ft::stack<T>::container_type::iterator iterator;
-
-    iterator begin() { return this->c.begin(); }
-    iterator end() { return this->c.end(); }
-};
-
 int main(int argc, char** argv) {
     if (argc != 2) {
         std::cerr << "Usage: ./test seed" << std::endl;
@@ -52,9 +34,7 @@ int main(int argc, char** argv) {
 
     ft::vector<std::string> vector_str;
     ft::vector<int> vector_int;
-    ft::stack<int> stack_int;
     ft::vector<Buffer> vector_buffer;
-    ft::stack<Buffer, std::deque<Buffer> > stack_deq_buffer;
     ft::map<int, int> map_int;
 
     for (int i = 0; i < COUNT; i++) {
@@ -83,19 +63,13 @@ int main(int argc, char** argv) {
 
     int sum = 0;
     for (int i = 0; i < 10000; i++) {
-        int access = rand();
+        int access = rand() % COUNT;
         sum += map_int[access];
     }
     std::cout << "should be constant with the same seed: " << sum << std::endl;
 
     { ft::map<int, int> copy = map_int; }
-    MutantStack<char> iterable_stack;
-    for (char letter = 'a'; letter <= 'z'; letter++)
-        iterable_stack.push(letter);
-    for (MutantStack<char>::iterator it = iterable_stack.begin();
-         it != iterable_stack.end(); it++) {
-        std::cout << *it;
-    }
+
     std::cout << std::endl;
     return (0);
 }
