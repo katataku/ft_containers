@@ -86,7 +86,9 @@ class map {
     ~map() { delete_tree(tree_); };
 
     map &operator=(const map &other) {
-        for (iterator it = other.begin(); it != other.end(); ++it) {
+        clear();
+        iterator other_end = other.end();
+        for (iterator it = other.begin(); it != other_end; ++it) {
             insert(*it);
         }
         return *this;
@@ -151,7 +153,6 @@ class map {
     void clear() {
         if (tree_) {
             tree_->clear();
-            tree_ = NULL;
         }
     }
 

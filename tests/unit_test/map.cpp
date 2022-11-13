@@ -412,6 +412,10 @@ static void load_map_test() {
     for (iterator it = numbers0.begin(); it != numbers0.end(); it++) {
         std::cout << it->first << std::endl;
     }
+
+    int_map numbers1;
+    numbers1 = numbers0;
+
     for (iterator it = numbers0.begin(); it != numbers0.end();) {
         Key k = it->first;
         it++;

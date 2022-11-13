@@ -1,7 +1,7 @@
 #ifndef TESTS_UNIT_TEST_UTILS_CPP_
 #define TESTS_UNIT_TEST_UTILS_CPP_
 
-#define LOAD_FACTOR_NUM 20000
+#define LOAD_FACTOR_NUM 2
 
 #define START_TEST_FUNC print_start_test_func(__func__);
 void print_start_test_func(std::string func_name) {

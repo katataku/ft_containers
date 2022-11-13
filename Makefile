@@ -1,6 +1,6 @@
 NAME = containers
 CXX = c++
-CXXFLAGS = -Wall -Wextra -std=c++98 -pedantic -MMD -MP -O3
+CXXFLAGS = -Wall -Wextra -std=c++98 -pedantic -MMD -MP -O0
 SRCS = $(wildcard srcs/*/*.cpp) tests/subject_test/main.cpp
 OBJS = $(SRCS:%.cpp=%.o)
 DEPS = $(OBJS:%.o=%.d)
