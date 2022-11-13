@@ -36,8 +36,8 @@ class node {
           left_child(NULL),
           right_child(NULL),
           parent(NULL),
-          hight(-1),
-          factor_(-1){};
+          hight(1),
+          factor_(0){};
 
     node(Key k, T v)
         : value(value_type(k, v)),
@@ -45,8 +45,8 @@ class node {
           left_child(NULL),
           right_child(NULL),
           parent(NULL),
-          hight(-1),
-          factor_(-1){};
+          hight(1),
+          factor_(0){};
 
     ~node(){};
 
@@ -69,30 +69,17 @@ class node {
         if (this->right_child) size += right_child->get_size();
         return size;
     }
-    void clear_hight() {
-        if (this->hight != -1) {
-            this->hight = -1;
-            this->factor_ = -1;
-            if (this->parent) this->parent->clear_hight();
-        }
-    }
-    int get_hight() {
-        if (this->hight == -1) this->update_hight();
-        return hight;
-    }
 
     void update_hight() {
-        size_t left_height = this->left_child ? left_child->get_hight() : 0;
-        size_t right_height = this->right_child ? right_child->get_hight() : 0;
+        size_t left_height = this->left_child ? left_child->hight : 0;
+        size_t right_height = this->right_child ? right_child->hight : 0;
         hight = 1 + std::max(left_height, right_height);
     }
 
     int get_factor() {
-        if (factor_ == -1) {
-            size_t left_height = left_child ? left_child->get_hight() : 0;
-            size_t right_height = right_child ? right_child->get_hight() : 0;
-            factor_ = (right_height - left_height);
-        }
+        size_t left_height = left_child ? left_child->hight : 0;
+        size_t right_height = right_child ? right_child->hight : 0;
+        factor_ = (right_height - left_height);
         return factor_;
     }
 
@@ -396,36 +383,38 @@ class AVL_tree {
         return get_root()->get_size();
     };
 
-    node_ptr balance(node_ptr node) {
+    void balance(node_ptr node) {
         int f;
-        bool is_balanced;
-        if (!node) return NULL;
-        while (1) {
+        while (node != NULL) {
             if (node == end_) {
-                root_ = end_->left_child;
-                return get_root();
+                set_root(end_->left_child);
+                return;
             };
+            node->update_hight();
             f = node->get_factor();
-            is_balanced = -1 <= f && f <= 1;
-            if (!is_balanced) {
-                if (f > 0) {
-                    if (node->right_child->get_factor() < 0) {
-                        node->right_child->rotate_right();
-                    }
-                    node->rotate_left();
-                } else {
-                    if (node->left_child->get_factor() > 0) {
-                        node->left_child->rotate_left();
-                    }
-                    node->rotate_right();
+            if (f >= 2) {
+                if (node->right_child->get_factor() < 0) {
+                    node->right_child->rotate_right();
                 }
-                return get_root();
+                node->rotate_left();
+                set_root(end_->left_child);
+                return;
             }
-            if (node->parent == NULL)
-                return node;
-            else
-                node = node->parent;
+            if (f <= -2) {
+                if (node->left_child->get_factor() > 0) {
+                    node->left_child->rotate_left();
+                }
+                node->rotate_right();
+                set_root(end_->left_child);
+                return;
+            }
+            if (node->parent == NULL) {
+                break;
+            }
+            node = node->parent;
         }
+        set_root(node);
+        return;
     }
 
     node_ptr find(Key x) {
@@ -449,16 +438,15 @@ class AVL_tree {
         node_ptr r = tar->right_child;
         node_ptr p = tar->parent;
         if (l == NULL) {
-            tar->clear_hight();
             if (p) p->set_child(r, tar->is_left());
             if (r) {
                 r->parent = p;
                 balance(r);
+            } else {
+                balance(p);
             }
-            set_root(balance(p));
         } else {
             node_ptr replace_node = l->get_max_node();
-            replace_node->clear_hight();
             if (replace_node->has_parent()) {
                 replace_node->parent->set_child(NULL, replace_node->is_left());
             }
@@ -466,7 +454,7 @@ class AVL_tree {
             replace_node->set_left(tar->left_child);
             replace_node->set_right(r);
             replace_node->set_parent(p);
-            set_root(balance(replace_node));
+            balance(replace_node);
         }
         delete_node(tar);
         return true;
@@ -482,8 +470,7 @@ class AVL_tree {
             return insert_ret_type(new_node, true);
         }
         new_parent->set_child(new_node, key < new_parent->get_key());
-        new_node->clear_hight();
-        set_root(balance(new_node));
+        balance(new_node);
         return insert_ret_type(new_node, true);
     }
 

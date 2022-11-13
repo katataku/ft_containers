@@ -1,6 +1,6 @@
 NAME = containers
 CXX = c++
-CXXFLAGS = -Wall -Wextra -std=c++98 -pedantic -MMD -MP
+CXXFLAGS = -Wall -Wextra -std=c++98 -pedantic -MMD -MP -O3
 SRCS = $(wildcard srcs/*/*.cpp) containers.cpp
 OBJS = $(SRCS:%.cpp=%.o)
 DEPS = $(OBJS:%.o=%.d)

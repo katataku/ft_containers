@@ -348,9 +348,6 @@ static void load_map_test() {
         value_type v = my_make_pair(i, "hello");
         numbers0.insert(v);
     }
-    for (iterator it = numbers0.begin(); it != numbers0.end(); it++) {
-        std::cout << it->first << std::endl;
-    }
 }
 
 int main_map() {
