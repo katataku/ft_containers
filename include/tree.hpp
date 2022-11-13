@@ -103,7 +103,7 @@ class node {
         if (x) x->parent = this;
     }
 
-    void set_child(node* x, bool is_left) {
+    void set_child(node* x, const bool& is_left) {
         if (is_left)
             this->set_left(x);
         else
@@ -131,9 +131,9 @@ class node {
         this->set_right(m);
         if (r) r->set_left(this);
 
-        this->clear_hight();
-        if (r) r->clear_hight();
-        if (p) p->clear_hight();
+        this->update_hight();
+        if (r) r->update_hight();
+        if (p) p->update_hight();
         return r;
     }
 
@@ -148,9 +148,9 @@ class node {
         this->set_left(m);
         if (l) l->set_right(this);
 
-        this->clear_hight();
-        if (l) l->clear_hight();
-        if (p) p->clear_hight();
+        this->update_hight();
+        if (l) l->update_hight();
+        if (p) p->update_hight();
         return l;
     }
 
@@ -436,6 +436,7 @@ class AVL_tree {
         node_ptr r = tar->right_child;
         node_ptr p = tar->parent;
         if (l == NULL) {
+            tar->clear_hight();
             if (p) p->set_child(r, tar->is_left());
             if (r) {
                 r->parent = p;
@@ -444,6 +445,7 @@ class AVL_tree {
             set_root(balance(p));
         } else {
             node_ptr replace_node = l->get_max_node();
+            replace_node->clear_hight();
             if (replace_node->has_parent()) {
                 replace_node->parent->set_child(NULL, replace_node->is_left());
             }
@@ -537,7 +539,7 @@ class AVL_tree {
         }
     }
 
-    node_ptr search_parent(Key x) {
+    node_ptr search_parent(const Key& x) {
         node_ptr cur = get_root();
         if (cur == NULL) return NULL;
         while (1) {
