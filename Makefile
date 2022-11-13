@@ -8,13 +8,15 @@ HEADERS = $(wildcard include/*.hpp)
 INCS = -Iinclude
 #CXXDEBUGFLAGS += -g -fsanitize=address -pg
 
-TEST_SRCS = tests/unit_test/main.cpp 
-FT_MAIN.O = tests/unit_test/ft_main.o
-STD_MAIN.O = tests/unit_test/std_main.o
+
+UNIT_TEST_DIR = tests/unit_test
+TEST_SRCS = $(UNIT_TEST_DIR)/main.cpp 
+FT_MAIN.O = $(UNIT_TEST_DIR)/ft_main.o
+STD_MAIN.O = $(UNIT_TEST_DIR)/std_main.o
 TEST_OBJS = $(FT_MAIN.O) $(STD_MAIN.O)
 TEST_DEPS = $(TEST_OBJS:%.o=%.d)
-FT_CONTAINER = tests/unit_test/ft_container
-STD_CONTAINER = tests/unit_test/std_container
+FT_CONTAINER = $(UNIT_TEST_DIR)/ft_container
+STD_CONTAINER = $(UNIT_TEST_DIR)/std_container
 FT_CONTAINER_OUTPUT= $(FT_CONTAINER).out
 STD_CONTAINER_OUTPUT= $(STD_CONTAINER).out
 
@@ -32,7 +34,9 @@ fclean: clean ## Delete executable
 	$(RM) $(NAME) $(FT_CONTAINER) $(STD_CONTAINER)
 
 clean: ## Delete object files
-	$(RM) $(OBJS) $(DEPS) $(TEST_OBJS) $(TEST_DEPS) $(FT_CONTAINER_OUTPUT) $(STD_CONTAINER_OUTPUT)
+	$(RM) $(OBJS) $(DEPS)
+	$(RM) $(TEST_OBJS) $(TEST_DEPS) $(FT_CONTAINER_OUTPUT) $(STD_CONTAINER_OUTPUT)
+	$(RM) ./tests/unit_test/ft_container.md
 
 re: fclean all ## Rebuild
 
