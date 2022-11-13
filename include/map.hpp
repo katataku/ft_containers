@@ -36,8 +36,8 @@ class map {
     typedef const value_type &const_reference;
     typedef typename Allocator::pointer pointer;
     typedef typename Allocator::const_pointer const_pointer;
-    typedef AVL_tree_iterator<value_type> iterator;
-    typedef const iterator const_iterator;
+    typedef typename tree_type::iterator iterator;
+    typedef typename tree_type::const_iterator const_iterator;
     typedef ft::reverse_iterator<iterator> reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
@@ -116,36 +116,16 @@ class map {
     /********************
      * Iterators        *
      ********************/
-    iterator begin() {
-        if (!tree_) return NULL;
-        return tree_->begin();
-    }
-    const_iterator begin() const {
-        if (!tree_) return NULL;
-        return tree_->begin();
-    }
-    iterator end() {
-        if (!tree_) return NULL;
-        return tree_->end();
-    }
-    const_iterator end() const {
-        if (!tree_) return NULL;
-        return tree_->end();
-    }
-    reverse_iterator rbegin() {
-        if (!tree_) return NULL;
-        return reverse_iterator(tree_->end());
-    }
-    reverse_iterator rend() {
-        if (!tree_) return NULL;
-        return reverse_iterator(tree_->begin());
-    }
+    iterator begin() { return tree_->begin(); }
+    const_iterator begin() const { return tree_->begin(); }
+    iterator end() { return tree_->end(); }
+    const_iterator end() const { return tree_->end(); }
+    reverse_iterator rbegin() { return reverse_iterator(tree_->end()); }
+    reverse_iterator rend() { return reverse_iterator(tree_->begin()); }
     const_reverse_iterator rbegin() const {
-        if (!tree_) return NULL;
         return const_reverse_iterator(tree_->end());
     }
     const_reverse_iterator rend() const {
-        if (!tree_) return NULL;
         return const_reverse_iterator(tree_->begin());
     }
 
@@ -241,7 +221,7 @@ class map {
         return end();
     }
     const_iterator find(const Key &key) const {
-        for (iterator it = begin(); it != end(); ++it) {
+        for (const_iterator it = begin(); it != end(); ++it) {
             if (it->first == key) return it;
         }
         return end();

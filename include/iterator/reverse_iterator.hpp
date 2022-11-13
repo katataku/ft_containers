@@ -49,7 +49,7 @@ class reverse_iterator
     iterator_type base() const { return current; };
     reference operator*() const {
         Iter __tmp = current;
-        return *--__tmp;
+        return *(--__tmp);
     };
     pointer operator->() const {
         // return std::addressof(operator*());

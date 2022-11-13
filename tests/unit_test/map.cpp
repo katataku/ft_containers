@@ -21,6 +21,8 @@ typedef int_map::value_type value_type;
 
 typedef int_map::iterator iterator;
 typedef int_map::const_iterator const_iterator;
+typedef int_map::reverse_iterator reverse_iterator;
+typedef int_map::const_reverse_iterator const_reverse_iterator;
 
 void print_map(int_map& map) {
     std::cout << "-print map-" << std::endl;
@@ -77,6 +79,47 @@ static void operator_map_test() {
     print(numbers0[1]);
     print(numbers0[2]);
     print(numbers0[0]);
+}
+
+static void iterator_map_test() {
+    START_TEST_FUNC
+
+    // map();
+    int_map numbers0;
+    print_map(numbers0);
+
+    value_type v = my_make_pair(1, "hello1");
+    value_type v2 = my_make_pair(2, "hello2");
+    value_type v3 = my_make_pair(3, "hello3");
+    value_type v4 = my_make_pair(4, "hello4");
+    numbers0.insert(v);
+    numbers0.insert(v2);
+    numbers0.insert(v3);
+    numbers0.insert(v4);
+
+    iterator it = numbers0.begin();
+    iterator it_end = numbers0.end();
+    for (; it != it_end; ++it) {
+        print((*it).second);
+    }
+
+    reverse_iterator rit = numbers0.rbegin();
+    reverse_iterator rit_end = numbers0.rend();
+    for (; rit != rit_end; ++rit) {
+        print((*rit).second);
+    }
+
+    const_iterator cit = numbers0.begin();
+    const_iterator cit_end = numbers0.end();
+    for (; cit != cit_end; ++cit) {
+        print((*cit).second);
+    }
+
+    const_reverse_iterator crit = numbers0.rbegin();
+    const_reverse_iterator crit_end = numbers0.rend();
+    for (; crit != crit_end; ++crit) {
+        print((*crit).second);
+    }
 }
 
 static void empty_map_test() {
@@ -239,10 +282,8 @@ static void find_map_test() {
     START_TEST_FUNC
 
     int_map numbers0;
-    iterator it = numbers0.begin();
-    print_bool(numbers0.find(1) == it);
-    const_iterator cit = numbers0.begin();
-    print_bool(numbers0.find(1) == cit);
+    print_bool(numbers0.find(1) == numbers0.begin());
+    print_bool(numbers0.find(1) == numbers0.end());
 
     value_type v = my_make_pair(1, "hello1");
     numbers0.insert(v);
@@ -381,6 +422,59 @@ static void load_map_test() {
     }
 }
 
+static void insert_iterator_map_test() {
+    START_TEST_FUNC
+
+    // map();
+    int_map numbers0;
+    print_map(numbers0);
+
+    value_type v = my_make_pair(1, "hello1");
+    value_type v2 = my_make_pair(2, "hello2");
+    value_type v3 = my_make_pair(3, "hello3");
+
+    numbers0.insert(v);
+    numbers0.insert(v2);
+
+    iterator it = numbers0.begin();
+    print((*it).second);
+    ++it;
+    print((*it).second);
+    numbers0.insert(v3);
+    ++it;
+    print((*it).second);
+
+    print_map(numbers0);
+}
+
+static void erase_iterator_map_test() {
+    START_TEST_FUNC
+
+    // map();
+    int_map numbers0;
+    print_map(numbers0);
+
+    value_type v = my_make_pair(1, "hello1");
+    value_type v2 = my_make_pair(2, "hello2");
+    value_type v3 = my_make_pair(3, "hello3");
+    value_type v4 = my_make_pair(4, "hello4");
+
+    numbers0.insert(v);
+    numbers0.insert(v2);
+    numbers0.insert(v3);
+    numbers0.insert(v4);
+
+    iterator it = numbers0.begin();
+    print((*it).second);
+    ++it;
+    print((*it).second);
+    numbers0.erase(3);
+    ++it;
+    print((*it).second);
+
+    print_map(numbers0);
+}
+
 int main_map() {
     START_TEST_FUNC
     // Member functions
@@ -388,6 +482,8 @@ int main_map() {
     // Element access
     at_map_test();
     operator_map_test();
+    // Iteartor
+    iterator_map_test();
     // Capacity
     empty_map_test();
     size_map_test();
@@ -413,6 +509,7 @@ int main_map() {
     load_map_test();
 
     // Minor Check
-
+    insert_iterator_map_test();
+    erase_iterator_map_test();
     return 0;
 }
