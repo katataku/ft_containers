@@ -186,7 +186,7 @@ static void insert_map_test() {
     numbers0.insert(numbers1.begin(), numbers1.end());
     print_map(numbers0);
 }
-/*
+
 static void erase_map_test() {
     START_TEST_FUNC
 
@@ -215,7 +215,6 @@ static void erase_map_test() {
     // print_map(numbers0);
     // numbers0.tree->print_tree();
 }
-*/
 
 static void swap_map_test() {
     START_TEST_FUNC
@@ -494,7 +493,7 @@ int main_map() {
     max_size_map_test();
     // Modifier
     insert_map_test();
-    //    erase_map_test();
+    erase_map_test();
     swap_map_test();
     // Lookup
     count_map_test();
