@@ -48,6 +48,15 @@ class node {
           hight(1),
           factor_(0){};
 
+    node(const value_type& v)
+        : value(v),
+          key(v.first),
+          left_child(NULL),
+          right_child(NULL),
+          parent(NULL),
+          hight(1),
+          factor_(0){};
+
     ~node(){};
 
     node& operator=(const node& other) {
@@ -223,7 +232,7 @@ bool operator!=(const ft::node<value_type1>& lhs,
     return lhs.get_value() != rhs.get_value();
 }
 
-template <class value_type>
+template <class value_type, class Node>
 struct AVL_tree_iterator
     : public ft::iterator<std::bidirectional_iterator_tag, value_type> {
  private:
@@ -240,7 +249,9 @@ struct AVL_tree_iterator
  private:
     typedef typename value_type::first_type Key;
     typedef typename value_type::second_type T;
-    typedef node<value_type>* node_ptr;
+    typedef Node node_type;
+    // typedef node<value_type>* node_ptr;
+    typedef node_type* node_ptr;
 
  private:
     node_ptr current;
@@ -255,14 +266,14 @@ struct AVL_tree_iterator
      ********************/
 
     // CopyConstructible
-    template <class Iter>
-    AVL_tree_iterator(const AVL_tree_iterator<Iter>& other) : current(NULL) {
+    template <class Iter, class N>
+    AVL_tree_iterator(const AVL_tree_iterator<Iter, N>& other) : current(NULL) {
         *this = other;
     }
 
     // CopyAssignable
-    template <class Iter>
-    AVL_tree_iterator& operator=(const AVL_tree_iterator<Iter>& other) {
+    template <class Iter, class N>
+    AVL_tree_iterator& operator=(const AVL_tree_iterator<Iter, N>& other) {
         current = reinterpret_cast<node_ptr>(other.base());
         return *this;
     }
@@ -322,14 +333,14 @@ struct AVL_tree_iterator
 };
 
 // Non-member functions
-template <class Iter11, class Iter21>
-bool operator==(const ft::AVL_tree_iterator<Iter11>& lhs,
-                const ft::AVL_tree_iterator<Iter21>& rhs) {
-    return *(lhs.base()) == *(rhs.base());
+template <class Iter11, class Iter21, class Node1, class Node2>
+bool operator==(const ft::AVL_tree_iterator<Iter11, Node1>& lhs,
+                const ft::AVL_tree_iterator<Iter21, Node2>& rhs) {
+    return (lhs.base()) == (rhs.base());
 }
-template <class Iter11, class Iter21>
-bool operator!=(const ft::AVL_tree_iterator<Iter11>& lhs,
-                const ft::AVL_tree_iterator<Iter21>& rhs) {
+template <class Iter11, class Iter21, class Node1, class Node2>
+bool operator!=(const ft::AVL_tree_iterator<Iter11, Node1>& lhs,
+                const ft::AVL_tree_iterator<Iter21, Node2>& rhs) {
     return !(lhs == rhs);
 }
 
@@ -350,8 +361,8 @@ class AVL_tree {
     typedef const value_type& const_reference;
     typedef typename Allocator::pointer pointer;
     typedef typename Allocator::const_pointer const_pointer;
-    typedef AVL_tree_iterator<value_type> iterator;
-    typedef AVL_tree_iterator<const value_type> const_iterator;
+    typedef AVL_tree_iterator<value_type, node_type> iterator;
+    typedef AVL_tree_iterator<const value_type, node_type> const_iterator;
     typedef ft::reverse_iterator<iterator> reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
@@ -379,7 +390,7 @@ class AVL_tree {
         node_allocator_type node_alloc = alloc;
 
         node_ptr new_node = node_alloc.allocate(1);
-        node_alloc.construct(new_node, node_type(val.first, val.second));
+        node_alloc.construct(new_node, node_type(val));
         return new_node;
     }
 
@@ -489,7 +500,17 @@ class AVL_tree {
     }
 
     insert_ret_type insert(const value_type& v) {
-        return insert(v.first, v.second);
+        Key key = v.first;
+        if (find(key) != NULL) return insert_ret_type(find(key), false);
+        node_ptr new_parent = search_parent(key);
+        node_ptr new_node = create_node(v);
+        if (new_parent == NULL) {
+            set_root(new_node);
+            return insert_ret_type(new_node, true);
+        }
+        new_parent->set_child(new_node, key < new_parent->get_key());
+        balance(new_node);
+        return insert_ret_type(new_node, true);
     }
 
     void print_tree() {
@@ -508,6 +529,13 @@ class AVL_tree {
         return iterator(get_root()->get_min_node());
     }
     iterator end() { return iterator(end_); }
+
+    const_iterator begin() const {
+        if (get_root() == NULL) return end();
+        return const_iterator(get_root()->get_min_node());
+    }
+    const_iterator end() const { return const_iterator(end_); }
+
     reverse_iterator rbegin() {
         if (get_root() == NULL) return rend();
         return reverse_iterator(get_root()->get_max_node());
@@ -523,7 +551,7 @@ class AVL_tree {
         }
     }
 
- private:
+    // private:
     node_ptr root_;
     // rootの親としてend用の擬似ノードを配置する。
     node_ptr end_;

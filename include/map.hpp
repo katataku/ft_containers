@@ -113,7 +113,11 @@ class map {
 
     // operator[]
     T &operator[](const Key &key) {
-        return insert(ft::make_pair(key, T())).first->second;
+        if (find(key) == end()) {
+            value_type v = value_type(key, "");
+            insert(v);
+        }
+        return find(key)->second;
     }
 
     /********************

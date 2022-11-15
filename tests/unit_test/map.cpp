@@ -29,8 +29,8 @@ void print_map(int_map& map) {
     std::cout << "empty:";
     print_bool(map.empty());
     std::cout << "[" << map.size() << "]";
-    for (int_map::iterator it = map.begin(); it != map.end(); ++it) {
-        std::cout << (*it).first << ":" << (*it).second << " ";
+    for (iterator it = map.begin(); it != map.end(); ++it) {
+        std::cout << "[item]" << (*it).first << ":" << (*it).second << " ";
     }
     std::cout << std::endl;
 }
@@ -75,10 +75,14 @@ static void operator_map_test() {
     numbers0.insert(v);
     value_type v2 = my_make_pair(2, "hello2");
     numbers0.insert(v2);
+    print_map(numbers0);
 
     print(numbers0[1]);
+    print_map(numbers0);
     print(numbers0[2]);
+    print_map(numbers0);
     print(numbers0[0]);
+    print_map(numbers0);
 }
 
 static void iterator_map_test() {
