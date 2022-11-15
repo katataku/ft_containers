@@ -77,6 +77,7 @@ class map {
 
     map(const map &other)
         : tree_(create_tree()), comp(Compare()), alloc(other.alloc) {
+        // iterator other_end = other.end();
         for (iterator it = other.begin(); it != other.end(); ++it) {
             insert(*it);
         }

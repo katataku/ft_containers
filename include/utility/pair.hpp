@@ -18,8 +18,10 @@ struct pair {
     pair(const pair<U1, U2>& p) : first(p.first), second(p.second) {}
 
     pair& operator=(const pair& other) {
-        this->first = other.first;
-        this->second = other.second;
+        if (this != &other) {
+            this->first = other.first;
+            this->second = other.second;
+        }
         return *this;
     };
 

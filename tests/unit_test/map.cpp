@@ -97,27 +97,21 @@ static void iterator_map_test() {
     numbers0.insert(v3);
     numbers0.insert(v4);
 
-    iterator it = numbers0.begin();
-    iterator it_end = numbers0.end();
-    for (; it != it_end; ++it) {
+    for (iterator it = numbers0.begin(); it != numbers0.end(); ++it) {
         print((*it).second);
     }
 
-    reverse_iterator rit = numbers0.rbegin();
-    reverse_iterator rit_end = numbers0.rend();
-    for (; rit != rit_end; ++rit) {
+    for (reverse_iterator rit = numbers0.rbegin(); rit != numbers0.rend();
+         ++rit) {
         print((*rit).second);
     }
 
-    const_iterator cit = numbers0.begin();
-    const_iterator cit_end = numbers0.end();
-    for (; cit != cit_end; ++cit) {
+    for (const_iterator cit = numbers0.begin(); cit != numbers0.end(); ++cit) {
         print((*cit).second);
     }
 
-    const_reverse_iterator crit = numbers0.rbegin();
-    const_reverse_iterator crit_end = numbers0.rend();
-    for (; crit != crit_end; ++crit) {
+    for (const_reverse_iterator crit = numbers0.rbegin();
+         crit != numbers0.rend(); ++crit) {
         print((*crit).second);
     }
 }

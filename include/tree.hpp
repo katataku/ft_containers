@@ -210,6 +210,19 @@ class node {
     }
 };
 
+// Non-member functions
+template <class value_type1, class value_type2>
+bool operator==(const ft::node<value_type1>& lhs,
+                const ft::node<value_type2>& rhs) {
+    return lhs.get_value() == rhs.get_value();
+}
+
+template <class value_type1, class value_type2>
+bool operator!=(const ft::node<value_type1>& lhs,
+                const ft::node<value_type2>& rhs) {
+    return lhs.get_value() != rhs.get_value();
+}
+
 template <class value_type>
 struct AVL_tree_iterator
     : public ft::iterator<std::bidirectional_iterator_tag, value_type> {
@@ -312,12 +325,12 @@ struct AVL_tree_iterator
 template <class Iter11, class Iter21>
 bool operator==(const ft::AVL_tree_iterator<Iter11>& lhs,
                 const ft::AVL_tree_iterator<Iter21>& rhs) {
-    return lhs.base() == rhs.base();
+    return *(lhs.base()) == *(rhs.base());
 }
 template <class Iter11, class Iter21>
 bool operator!=(const ft::AVL_tree_iterator<Iter11>& lhs,
                 const ft::AVL_tree_iterator<Iter21>& rhs) {
-    return lhs.base() != rhs.base();
+    return !(lhs == rhs);
 }
 
 template <class Key, class T, class Compare = std::less<Key>,
@@ -338,7 +351,7 @@ class AVL_tree {
     typedef typename Allocator::pointer pointer;
     typedef typename Allocator::const_pointer const_pointer;
     typedef AVL_tree_iterator<value_type> iterator;
-    typedef AVL_tree_iterator<const_value_type> const_iterator;
+    typedef AVL_tree_iterator<const value_type> const_iterator;
     typedef ft::reverse_iterator<iterator> reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
