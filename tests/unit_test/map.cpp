@@ -30,7 +30,7 @@ void print_map(int_map& map) {
     print_bool(map.empty());
     std::cout << "[" << map.size() << "]";
     for (iterator it = map.begin(); it != map.end(); ++it) {
-        std::cout << "[item]" << (*it).first << ":" << (*it).second << " ";
+        std::cout << (*it).first << ":" << (*it).second << " ";
     }
     std::cout << std::endl;
 }
@@ -209,8 +209,8 @@ static void erase_map_test() {
     numbers0.erase(numbers0.begin(), numbers0.end());
     print_map(numbers0);
 
-    // print(numbers0.erase(3));
-    // print_map(numbers0);
+    print(numbers0.erase(3));
+    print_map(numbers0);
     // numbers0.tree->print_tree();
 }
 
