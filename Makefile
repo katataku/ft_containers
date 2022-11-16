@@ -6,7 +6,7 @@ OBJS = $(SRCS:%.cpp=%.o)
 DEPS = $(OBJS:%.o=%.d)
 HEADERS = $(wildcard include/*.hpp)
 INCS = -Iinclude
-#CXXDEBUGFLAGS += -g -fsanitize=address -pg
+#CXXDEBUGFLAGS += -g -fsanitize=address 
 
 
 UNIT_TEST_DIR = tests/unit_test
