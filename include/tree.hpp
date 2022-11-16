@@ -543,9 +543,12 @@ class AVL_tree {
 
     reverse_iterator rbegin() {
         if (get_root() == NULL) return rend();
-        return reverse_iterator(get_root()->get_max_node());
+        return reverse_iterator(iterator(get_root()->get_max_node()));
     }
-    reverse_iterator rend() { return reverse_iterator(end_); }
+    reverse_iterator rend() { return reverse_iterator(end()); }
+
+    reverse_iterator rbegin() const { return reverse_iterator(end()); }
+    reverse_iterator rend() const { return reverse_iterator(begin()); }
 
     void clear() {
         iterator it = begin();
