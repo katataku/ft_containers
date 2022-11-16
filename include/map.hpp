@@ -145,7 +145,6 @@ class map {
         return 0;
     }
 
-    // TODO(me): テスト用なので、最後に修正。
     size_type max_size() const {
         return std::numeric_limits<difference_type>::max() / 32;
     }
@@ -275,15 +274,9 @@ class map {
     // value_comp
     value_compare value_comp() const { return value_compare(key_comp()); }
 
-    /************************
-     * Non-Member functions *
-     ************************/
-
-    tree_ptr get_tree() { return tree_; }
-
-    tree_ptr tree_;
-
  private:
+    tree_ptr get_tree() { return tree_; }
+    tree_ptr tree_;
     key_compare comp;
     // アロケーターの値
     allocator_type alloc;
@@ -313,6 +306,9 @@ class map {
     pointer allocate(size_type n) { return allocator_type::allocate(alloc, n); }
 };
 
+/************************
+ * Non-Member functions *
+ ************************/
 template <class Key, class T, class Compare, class Allocator>
 bool operator==(const map<Key, T, Compare, Allocator> &lhs,
                 const map<Key, T, Compare, Allocator> &rhs) {

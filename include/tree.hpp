@@ -489,35 +489,30 @@ class AVL_tree {
 
     typedef ft::pair<iterator, bool> insert_ret_type;
     insert_ret_type insert(Key key, T value) {
-        if (find(key) != NULL)
-            return insert_ret_type(iterator(find(key)), false);
-        node_ptr new_parent = search_parent(key);
-        node_ptr new_node = create_node(key, value);
-        if (new_parent == NULL) {
-            set_root(new_node);
-            return insert_ret_type(iterator(new_node), true);
-        }
-        new_parent->set_child(new_node, key < new_parent->get_key());
-        balance(new_node);
-        return insert_ret_type(iterator(new_node), true);
+        node_ptr f = find(key);
+        if (f != NULL) return insert_ret_type(iterator(f), false);
+        return __insert(search_parent(key), create_node(key, value));
     }
 
     insert_ret_type insert(const value_type& v) {
-        Key key = v.first;
-        if (find(key) != NULL)
-            return insert_ret_type(iterator(find(key)), false);
+        node_ptr f = find(v.first);
+        if (f != NULL) return insert_ret_type(iterator(f), false);
+        return __insert(search_parent(v.first), create_node(v));
+    }
 
-        node_ptr new_parent = search_parent(key);
-        node_ptr new_node = create_node(v);
+ private:
+    insert_ret_type __insert(node_ptr new_parent, node_ptr new_node) {
         if (new_parent == NULL) {
             set_root(new_node);
-            return insert_ret_type(iterator(new_node), true);
+        } else {
+            new_parent->set_child(new_node,
+                                  new_node->get_key() < new_parent->get_key());
+            balance(new_node);
         }
-        new_parent->set_child(new_node, key < new_parent->get_key());
-        balance(new_node);
         return insert_ret_type(iterator(new_node), true);
     }
 
+ public:
     void print_tree() {
         print("-----------------");
         print("https://mermaid.live/edit");
@@ -559,12 +554,13 @@ class AVL_tree {
         }
     }
 
-    // private:
+    node_ptr get_root() const { return root_; }
+
+ private:
     node_ptr root_;
     // rootの親としてend用の擬似ノードを配置する。
     node_ptr end_;
 
-    node_ptr get_root() const { return root_; }
     node_ptr set_root(node_ptr root) {
         root_ = root;
         end_->set_left(root);
