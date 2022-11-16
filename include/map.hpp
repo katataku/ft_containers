@@ -1,9 +1,11 @@
 #ifndef INCLUDE_MAP_HPP_
 #define INCLUDE_MAP_HPP_
 
+#include <functional>
 #include <limits>
 #include <memory>
 #include <stdexcept>
+#include <utility>
 
 #include "algorithm.hpp"
 #include "iterator.hpp"
@@ -49,7 +51,7 @@ class map {
 
      protected:
         Compare comp;
-        value_compare(Compare c) : comp(c) {}
+        explicit value_compare(Compare c) : comp(c) {}
 
      public:
         bool operator()(const value_type &lhs, const value_type &rhs) const {
@@ -61,10 +63,10 @@ class map {
      * Member functions *
      ********************/
     // Constructor
-    map() : tree_(create_tree()), comp(Compare()), alloc(allocator_type()){};
+    map() : tree_(create_tree()), comp(Compare()), alloc(allocator_type()) {}
 
     explicit map(const Compare &comp, const Allocator &alloc = Allocator())
-        : tree_(create_tree()), comp(comp), alloc(alloc){};
+        : tree_(create_tree()), comp(comp), alloc(alloc) {}
 
     template <class InputIt>
     map(InputIt first, InputIt last, const Compare &comp = Compare(),
@@ -81,10 +83,10 @@ class map {
         for (iterator it = other.begin(); it != other.end(); ++it) {
             insert(*it);
         }
-    };
+    }
 
     // Destructor
-    ~map() { delete_tree(tree_); };
+    ~map() { delete_tree(tree_); }
 
     map &operator=(const map &other) {
         clear();
@@ -93,9 +95,9 @@ class map {
             insert(*it);
         }
         return *this;
-    };
+    }
 
-    allocator_type get_allocator() const { return alloc; };
+    allocator_type get_allocator() const { return alloc; }
     /********************
      * Element Access   *
      ********************/
@@ -136,22 +138,21 @@ class map {
     /********************
      * Capacity         *
      ********************/
-    bool empty() const { return size() == 0; };
+    bool empty() const { return size() == 0; }
 
     size_type size() const {
         if (tree_) return tree_->size();
         return 0;
-    };
+    }
 
-    // TODO: テスト用なので、最後に修正。
+    // TODO(me): テスト用なので、最後に修正。
     size_type max_size() const {
         return std::numeric_limits<difference_type>::max() / 32;
-    };
+    }
 
     /********************
      * Modifiers        *
      ********************/
-    // TODO:impl testcode;
     void clear() {
         if (tree_) {
             tree_->clear();
@@ -164,12 +165,12 @@ class map {
             tree_ = create_tree();
         }
         return tree_->insert(value);
-    };
+    }
 
     iterator insert(iterator pos, const value_type &value) {
         (void)pos;
         return insert(value).first;
-    };
+    }
 
     template <class InputIt>
     void insert(InputIt first, InputIt last) {
@@ -182,7 +183,7 @@ class map {
     iterator erase(iterator pos) {
         Key key = pos.base()->get_key();
         erase(key);
-        return NULL;
+        return pos;
     }
     iterator erase(iterator first, iterator last) {
         iterator it = first;
@@ -191,7 +192,7 @@ class map {
             ++it;
             erase(key);
         }
-        return NULL;
+        return last;
     }
     size_type erase(const Key &key) { return tree_->remove(key) ? 1 : 0; }
 
@@ -207,7 +208,6 @@ class map {
      * Lookup           *
      ********************/
     // count
-    // TODO: impl testcode;
     size_type count(const Key &key) const {
         if (find(key) == end()) {
             return 0;
@@ -216,7 +216,6 @@ class map {
     }
 
     // find
-    // TODO: impl;
     iterator find(const Key &key) {
         for (iterator it = begin(); it != end(); ++it) {
             if (it->first == key) return it;
@@ -272,9 +271,9 @@ class map {
      * Observer *
      ************/
     // key_compare
-    key_compare key_comp() const { return comp; };
+    key_compare key_comp() const { return comp; }
     // value_comp
-    value_compare value_comp() const { return value_compare(key_comp()); };
+    value_compare value_comp() const { return value_compare(key_comp()); }
 
     /************************
      * Non-Member functions *

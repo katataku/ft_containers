@@ -1,7 +1,11 @@
 #ifndef INCLUDE_TREE_HPP_
 #define INCLUDE_TREE_HPP_
 
+#include <algorithm>
+#include <functional>
 #include <iostream>
+#include <memory>
+#include <string>
 
 #include "iterator.hpp"
 #include "utility.hpp"
@@ -37,7 +41,7 @@ class node {
           right_child(NULL),
           parent(NULL),
           hight(1),
-          factor_(0){};
+          factor_(0) {}
 
     node(Key k, T v)
         : value(value_type(k, v)),
@@ -46,18 +50,18 @@ class node {
           right_child(NULL),
           parent(NULL),
           hight(1),
-          factor_(0){};
+          factor_(0) {}
 
-    node(const value_type& v)
+    explicit node(const value_type& v)
         : value(v),
           key(v.first),
           left_child(NULL),
           right_child(NULL),
           parent(NULL),
           hight(1),
-          factor_(0){};
+          factor_(0) {}
 
-    ~node(){};
+    ~node() {}
 
     node& operator=(const node& other) {
         this->value = other.value;
@@ -175,25 +179,23 @@ class node {
     node* get_next_node() {
         if (this->right_child) {
             return (this->right_child->get_min_node());
-        } else {
-            node* cur = this;
-            while (cur->is_right()) {
-                cur = cur->parent;
-            }
-            return cur->parent;
         }
+        node* cur = this;
+        while (cur->is_right()) {
+            cur = cur->parent;
+        }
+        return cur->parent;
     }
 
     node* get_prev_node() {
         if (this->left_child) {
             return (this->left_child->get_max_node());
-        } else {
-            node* cur = this;
-            while (cur->is_left()) {
-                cur = cur->parent;
-            }
-            return cur->parent;
         }
+        node* cur = this;
+        while (cur->is_left()) {
+            cur = cur->parent;
+        }
+        return cur->parent;
     }
     void print(value_type x) {
         std::cout << x.first << ":" << x.second << std::endl;
@@ -259,7 +261,7 @@ struct AVL_tree_iterator
  public:
     node_ptr base() const { return current; }
 
-    AVL_tree_iterator(node_ptr node) : current(node) {}
+    explicit AVL_tree_iterator(node_ptr node) : current(node) {}
 
     /********************
      * LegacyIterator   *
@@ -366,14 +368,16 @@ class AVL_tree {
     typedef ft::reverse_iterator<iterator> reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
-    AVL_tree() : end_(create_node()) { set_root(NULL); };
+    AVL_tree() : end_(create_node()) { set_root(NULL); }
 
-    AVL_tree(value_type v) : end_(create_node()) { set_root(create_node(v)); };
-    AVL_tree(Key k, T t) : end_(create_node()) { set_root(create_node(k, t)); };
+    explicit AVL_tree(value_type v) : end_(create_node()) {
+        set_root(create_node(v));
+    }
+    AVL_tree(Key k, T t) : end_(create_node()) { set_root(create_node(k, t)); }
     ~AVL_tree() {
         clear();
         delete_node(end_);
-    };
+    }
 
     node_ptr create_node() { return create_node(value_type(Key(), T())); }
 
@@ -406,17 +410,16 @@ class AVL_tree {
     size_type size() const {
         if (get_root() == NULL) return 0;
         return get_root()->get_size();
-    };
+    }
 
     void balance(node_ptr node) {
-        int f;
         while (node != NULL) {
             if (node == end_) {
                 set_root(end_->left_child);
                 return;
-            };
+            }
             node->update_hight();
-            f = node->get_factor();
+            int f = node->get_factor();
             if (f >= 2) {
                 if (node->right_child->get_factor() < 0) {
                     node->right_child->rotate_right();
@@ -439,12 +442,11 @@ class AVL_tree {
             node = node->parent;
         }
         set_root(node);
-        return;
     }
 
     node_ptr find(Key x) {
         node_ptr cur = get_root();
-        while (1) {
+        while (true) {
             if (cur == NULL) return NULL;
             Key k = cur->get_key();
             if (k == x) return cur;
@@ -487,30 +489,33 @@ class AVL_tree {
 
     typedef ft::pair<iterator, bool> insert_ret_type;
     insert_ret_type insert(Key key, T value) {
-        if (find(key) != NULL) return insert_ret_type(find(key), false);
+        if (find(key) != NULL)
+            return insert_ret_type(iterator(find(key)), false);
         node_ptr new_parent = search_parent(key);
         node_ptr new_node = create_node(key, value);
         if (new_parent == NULL) {
             set_root(new_node);
-            return insert_ret_type(new_node, true);
+            return insert_ret_type(iterator(new_node), true);
         }
         new_parent->set_child(new_node, key < new_parent->get_key());
         balance(new_node);
-        return insert_ret_type(new_node, true);
+        return insert_ret_type(iterator(new_node), true);
     }
 
     insert_ret_type insert(const value_type& v) {
         Key key = v.first;
-        if (find(key) != NULL) return insert_ret_type(find(key), false);
+        if (find(key) != NULL)
+            return insert_ret_type(iterator(find(key)), false);
+
         node_ptr new_parent = search_parent(key);
         node_ptr new_node = create_node(v);
         if (new_parent == NULL) {
             set_root(new_node);
-            return insert_ret_type(new_node, true);
+            return insert_ret_type(iterator(new_node), true);
         }
         new_parent->set_child(new_node, key < new_parent->get_key());
         balance(new_node);
-        return insert_ret_type(new_node, true);
+        return insert_ret_type(iterator(new_node), true);
     }
 
     void print_tree() {
@@ -584,7 +589,7 @@ class AVL_tree {
     node_ptr search_parent(const Key& x) {
         node_ptr cur = get_root();
         if (cur == NULL) return NULL;
-        while (1) {
+        while (true) {
             if (x < cur->get_key()) {
                 if (cur->left_child == NULL) return cur;
                 cur = cur->left_child;
