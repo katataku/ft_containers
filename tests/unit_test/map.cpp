@@ -405,7 +405,7 @@ static void load_map_test() {
     for (int i = 0; i < LOAD_FACTOR_NUM; i++) {
         value_type v = my_make_pair(i, "hello");
         numbers0.insert(v);
-        sum += i;
+        sum += 1;
     }
 
     for (iterator it = numbers0.begin(); it != numbers0.end(); it++) {
@@ -420,7 +420,7 @@ static void load_map_test() {
     for (iterator it = numbers0.begin(); it != numbers0.end();) {
         Key k = it->first;
         it++;
-        sum -= it->first;
+        sum -= 1;
         numbers0.erase(k);
     }
     for (iterator it = numbers0.begin(); it != numbers0.end(); it++) {
