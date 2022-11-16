@@ -22,91 +22,87 @@ class node {
     typedef typename value_type::first_type const Key;
     typedef typename value_type::second_type T;
 
-    // typedef Key key_type;
-    // typedef T mapped_type;
-    // typedef ft::pair<const Key, T> value_type;
-
-    value_type value;
-    Key key;
-    node* left_child;
-    node* right_child;
-    node* parent;
-    int hight;
+    value_type value_;
+    Key key_;
+    node* left_child_;
+    node* right_child_;
+    node* parent_;
+    int hight_;
     int factor_;
 
     node()
-        : value(value_type()),
-          key(Key()),
-          left_child(NULL),
-          right_child(NULL),
-          parent(NULL),
-          hight(1),
+        : value_(value_type()),
+          key_(Key()),
+          left_child_(NULL),
+          right_child_(NULL),
+          parent_(NULL),
+          hight_(1),
           factor_(0) {}
 
     node(Key k, T v)
-        : value(value_type(k, v)),
-          key(k),
-          left_child(NULL),
-          right_child(NULL),
-          parent(NULL),
-          hight(1),
+        : value_(value_type(k, v)),
+          key_(k),
+          left_child_(NULL),
+          right_child_(NULL),
+          parent_(NULL),
+          hight_(1),
           factor_(0) {}
 
     explicit node(const value_type& v)
-        : value(v),
-          key(v.first),
-          left_child(NULL),
-          right_child(NULL),
-          parent(NULL),
-          hight(1),
+        : value_(v),
+          key_(v.first),
+          left_child_(NULL),
+          right_child_(NULL),
+          parent_(NULL),
+          hight_(1),
           factor_(0) {}
 
     ~node() {}
 
     node& operator=(const node& other) {
-        this->value = other.value;
-        this->key = other.key;
-        this->left_child = other.left_child;
-        this->right_child = other.right_child;
-        this->parent = other.parent;
-        this->hight = other.hight;
+        this->value_ = other.value_;
+        this->key_ = other.key_;
+        this->left_child_ = other.left_child_;
+        this->right_child_ = other.right_child_;
+        this->parent_ = other.parent_;
+        this->hight_ = other.hight_;
         return *this;
     }
 
-    Key get_key() const { return this->key; }
-    value_type get_value() const { return this->value; }
+    Key get_key() const { return this->key_; }
+    value_type get_value() const { return this->value_; }
 
     size_t get_size() const {
         size_t size = 1;
-        if (this->left_child) size += left_child->get_size();
-        if (this->right_child) size += right_child->get_size();
+        if (this->left_child_) size += left_child_->get_size();
+        if (this->right_child_) size += right_child_->get_size();
         return size;
     }
 
     void update_hight() {
-        size_t left_height = this->left_child ? left_child->hight : 0;
-        size_t right_height = this->right_child ? right_child->hight : 0;
-        hight = 1 + std::max(left_height, right_height);
+        size_t left_height = this->left_child_ ? left_child_->hight_ : 0;
+        size_t right_height = this->right_child_ ? right_child_->hight_ : 0;
+        hight_ = 1 + std::max(left_height, right_height);
     }
 
     int get_factor() {
-        size_t left_height = left_child ? left_child->hight : 0;
-        size_t right_height = right_child ? right_child->hight : 0;
+        size_t left_height = left_child_ ? left_child_->hight_ : 0;
+        size_t right_height = right_child_ ? right_child_->hight_ : 0;
         factor_ = (right_height - left_height);
         return factor_;
     }
 
-    node* get_left() const { return left_child; }
-    node* get_right() const { return right_child; }
-    node* get_parent() const { return parent; }
+    node* get_left() const { return left_child_; }
+    node* get_right() const { return right_child_; }
+    node* get_parent() const { return parent_; }
 
     void set_left(node* x) {
-        this->left_child = x;
-        if (x) x->parent = this;
+        this->left_child_ = x;
+        if (x) x->parent_ = this;
     }
     void set_right(node* x) {
-        right_child = x;
-        if (x) x->parent = this;
+        right_child_ = x;
+        if (x) x->parent_ = this;
     }
 
     void set_child(node* x, const bool& is_left) {
@@ -116,23 +112,23 @@ class node {
             this->set_right(x);
     }
 
-    void set_parent(node* x) { parent = x; }
+    void set_parent(node* x) { parent_ = x; }
 
-    bool has_parent() const { return parent != NULL; }
+    bool has_parent() const { return parent_ != NULL; }
     bool is_left() const {
-        return (has_parent() && this == parent->left_child);
+        return (has_parent() && this == parent_->left_child_);
     }
     bool is_right() const {
-        return (has_parent() && this == parent->right_child);
+        return (has_parent() && this == parent_->right_child_);
     }
 
     node* rotate_left() {
-        node* r = this->right_child;
-        node* m = r->left_child;
-        node* p = this->parent;
+        node* r = this->right_child_;
+        node* m = r->left_child_;
+        node* p = this->parent_;
 
-        r->parent = NULL;
-        if (p) parent->set_child(r, this->is_left());
+        r->parent_ = NULL;
+        if (p) parent_->set_child(r, this->is_left());
 
         this->set_right(m);
         if (r) r->set_left(this);
@@ -144,12 +140,12 @@ class node {
     }
 
     node* rotate_right() {
-        node* l = this->left_child;
-        node* m = l->right_child;
-        node* p = this->parent;
+        node* l = this->left_child_;
+        node* m = l->right_child_;
+        node* p = this->parent_;
 
-        l->parent = NULL;
-        if (p) parent->set_child(l, this->is_left());
+        l->parent_ = NULL;
+        if (p) parent_->set_child(l, this->is_left());
 
         this->set_left(m);
         if (l) l->set_right(this);
@@ -162,40 +158,40 @@ class node {
 
     node* get_min_node() {
         node* cur = this;
-        while (cur->left_child) {
-            cur = cur->left_child;
+        while (cur->left_child_) {
+            cur = cur->left_child_;
         }
         return cur;
     }
 
     node* get_max_node() {
         node* cur = this;
-        while (cur->right_child) {
-            cur = cur->right_child;
+        while (cur->right_child_) {
+            cur = cur->right_child_;
         }
         return cur;
     }
 
     node* get_next_node() {
-        if (this->right_child) {
-            return (this->right_child->get_min_node());
+        if (this->right_child_) {
+            return (this->right_child_->get_min_node());
         }
         node* cur = this;
         while (cur->is_right()) {
-            cur = cur->parent;
+            cur = cur->parent_;
         }
-        return cur->parent;
+        return cur->parent_;
     }
 
     node* get_prev_node() {
-        if (this->left_child) {
-            return (this->left_child->get_max_node());
+        if (this->left_child_) {
+            return (this->left_child_->get_max_node());
         }
         node* cur = this;
         while (cur->is_left()) {
-            cur = cur->parent;
+            cur = cur->parent_;
         }
-        return cur->parent;
+        return cur->parent_;
     }
     void print(value_type x) {
         std::cout << x.first << ":" << x.second << std::endl;
@@ -208,15 +204,16 @@ class node {
     }
 
     void print_node() {
-        print(this->value);
-        if (this->left_child) {
-            print_arrow(this->value, this->left_child->value, ARROW_LEFT_SIDE);
-            this->left_child->print_node();
+        print(this->get_value());
+        if (this->left_child_) {
+            print_arrow(this->get_value(), this->left_child_->get_value(),
+                        ARROW_LEFT_SIDE);
+            this->left_child_->print_node();
         }
-        if (this->right_child) {
-            print_arrow(this->value, this->right_child->value,
+        if (this->right_child_) {
+            print_arrow(this->get_value(), this->right_child_->get_value(),
                         ARROW_RIGHT_SIDE);
-            this->right_child->print_node();
+            this->right_child_->print_node();
         }
     }
 };
@@ -256,12 +253,12 @@ struct AVL_tree_iterator
     typedef node_type* node_ptr;
 
  private:
-    node_ptr current;
+    node_ptr current_;
 
  public:
-    node_ptr base() const { return current; }
+    node_ptr base() const { return current_; }
 
-    explicit AVL_tree_iterator(node_ptr node) : current(node) {}
+    explicit AVL_tree_iterator(node_ptr node) : current_(node) {}
 
     /********************
      * LegacyIterator   *
@@ -269,14 +266,15 @@ struct AVL_tree_iterator
 
     // CopyConstructible
     template <class Iter, class N>
-    AVL_tree_iterator(const AVL_tree_iterator<Iter, N>& other) : current(NULL) {
+    AVL_tree_iterator(const AVL_tree_iterator<Iter, N>& other)
+        : current_(NULL) {
         *this = other;
     }
 
     // CopyAssignable
     template <class Iter, class N>
     AVL_tree_iterator& operator=(const AVL_tree_iterator<Iter, N>& other) {
-        current = reinterpret_cast<node_ptr>(other.base());
+        current_ = reinterpret_cast<node_ptr>(other.base());
         return *this;
     }
     // Destructible
@@ -285,11 +283,11 @@ struct AVL_tree_iterator
     // Swappable
 
     // dereferenceable
-    reference operator*() const { return (current->value); }
+    reference operator*() const { return (current_->value_); }
 
     // incrementable
     AVL_tree_iterator& operator++() {
-        current = current->get_next_node();
+        current_ = current_->get_next_node();
         return *this;
     }
     AVL_tree_iterator operator++(int) {
@@ -304,14 +302,14 @@ struct AVL_tree_iterator
 
     // EqualityComparable
 
-    pointer operator->() const { return &(current->value); }
+    pointer operator->() const { return &(current_->value_); }
 
     /************************
      * LegacyForwardIterator*
      ************************/
 
     // DefaultConstructible
-    AVL_tree_iterator() : current(NULL) {}
+    AVL_tree_iterator() : current_(NULL) {}
 
     // Multipass guarantee
     // trivial: nothing todo.
@@ -324,7 +322,7 @@ struct AVL_tree_iterator
      ******************************/
     // decrementable
     AVL_tree_iterator& operator--() {
-        current = current->get_prev_node();
+        current_ = current_->get_prev_node();
         return *this;
     }
     AVL_tree_iterator operator--(int) {
@@ -415,31 +413,31 @@ class AVL_tree {
     void balance(node_ptr node) {
         while (node != NULL) {
             if (node == end_) {
-                set_root(end_->left_child);
+                set_root(end_->left_child_);
                 return;
             }
             node->update_hight();
             int f = node->get_factor();
             if (f >= 2) {
-                if (node->right_child->get_factor() < 0) {
-                    node->right_child->rotate_right();
+                if (node->right_child_->get_factor() < 0) {
+                    node->right_child_->rotate_right();
                 }
                 node->rotate_left();
-                set_root(end_->left_child);
+                set_root(end_->left_child_);
                 return;
             }
             if (f <= -2) {
-                if (node->left_child->get_factor() > 0) {
-                    node->left_child->rotate_left();
+                if (node->left_child_->get_factor() > 0) {
+                    node->left_child_->rotate_left();
                 }
                 node->rotate_right();
-                set_root(end_->left_child);
+                set_root(end_->left_child_);
                 return;
             }
-            if (node->parent == NULL) {
+            if (node->parent_ == NULL) {
                 break;
             }
-            node = node->parent;
+            node = node->parent_;
         }
         set_root(node);
     }
@@ -451,9 +449,9 @@ class AVL_tree {
             Key k = cur->get_key();
             if (k == x) return cur;
             if (x < k) {
-                cur = cur->left_child;
+                cur = cur->left_child_;
             } else {
-                cur = cur->right_child;
+                cur = cur->right_child_;
             }
         }
     }
@@ -461,13 +459,13 @@ class AVL_tree {
     bool remove(Key x) {
         node_ptr tar = find(x);
         if (tar == NULL) return false;
-        node_ptr l = tar->left_child;
-        node_ptr r = tar->right_child;
-        node_ptr p = tar->parent;
+        node_ptr l = tar->left_child_;
+        node_ptr r = tar->right_child_;
+        node_ptr p = tar->parent_;
         if (l == NULL) {
             if (p) p->set_child(r, tar->is_left());
             if (r) {
-                r->parent = p;
+                r->parent_ = p;
                 balance(r);
             } else {
                 balance(p);
@@ -475,10 +473,10 @@ class AVL_tree {
         } else {
             node_ptr replace_node = l->get_max_node();
             if (replace_node->has_parent()) {
-                replace_node->parent->set_child(NULL, replace_node->is_left());
+                replace_node->parent_->set_child(NULL, replace_node->is_left());
             }
             if (p) p->set_child(replace_node, tar->is_left());
-            replace_node->set_left(tar->left_child);
+            replace_node->set_left(tar->left_child_);
             replace_node->set_right(r);
             replace_node->set_parent(p);
             balance(replace_node);
@@ -590,11 +588,11 @@ class AVL_tree {
         if (cur == NULL) return NULL;
         while (true) {
             if (x < cur->get_key()) {
-                if (cur->left_child == NULL) return cur;
-                cur = cur->left_child;
+                if (cur->left_child_ == NULL) return cur;
+                cur = cur->left_child_;
             } else {
-                if (cur->right_child == NULL) return cur;
-                cur = cur->right_child;
+                if (cur->right_child_ == NULL) return cur;
+                cur = cur->right_child_;
             }
         }
     }
@@ -602,9 +600,10 @@ class AVL_tree {
     void print(std::string x) { std::cout << x << std::endl; }
     void print_nodeinfo(node_ptr tar) {
         std::cout << "tar:" << tar->value << std::endl;
-        std::cout << "tar->parent:" << tar->parent->value << std::endl;
-        std::cout << "tar->left_child:" << tar->left_child->value << std::endl;
-        std::cout << "tar->right_child:" << tar->right_child->value
+        std::cout << "tar->parent:" << tar->parent_->value << std::endl;
+        std::cout << "tar->left_child_:" << tar->left_child_->value
+                  << std::endl;
+        std::cout << "tar->right_child_:" << tar->right_child_->value
                   << std::endl;
     }
 };

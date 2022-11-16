@@ -63,22 +63,22 @@ class map {
      * Member functions *
      ********************/
     // Constructor
-    map() : tree_(create_tree()), comp(Compare()), alloc(allocator_type()) {}
+    map() : tree_(create_tree()), comp_(Compare()), alloc_(allocator_type()) {}
 
     explicit map(const Compare &comp, const Allocator &alloc = Allocator())
-        : tree_(create_tree()), comp(comp), alloc(alloc) {}
+        : tree_(create_tree()), comp_(comp), alloc_(alloc) {}
 
     template <class InputIt>
     map(InputIt first, InputIt last, const Compare &comp = Compare(),
         const Allocator &alloc = Allocator())
-        : tree_(create_tree()), comp(comp), alloc(alloc) {
+        : tree_(create_tree()), comp_(comp), alloc_(alloc) {
         for (InputIt i = first; i != last; ++i) {
             insert(*i);
         }
     }
 
     map(const map &other)
-        : tree_(create_tree()), comp(Compare()), alloc(other.alloc) {
+        : tree_(create_tree()), comp_(Compare()), alloc_(other.alloc_) {
         // iterator other_end = other.end();
         for (iterator it = other.begin(); it != other.end(); ++it) {
             insert(*it);
@@ -97,7 +97,7 @@ class map {
         return *this;
     }
 
-    allocator_type get_allocator() const { return alloc; }
+    allocator_type get_allocator() const { return alloc_; }
     /********************
      * Element Access   *
      ********************/
@@ -270,16 +270,16 @@ class map {
      * Observer *
      ************/
     // key_compare
-    key_compare key_comp() const { return comp; }
+    key_compare key_comp() const { return comp_; }
     // value_comp
     value_compare value_comp() const { return value_compare(key_comp()); }
 
  private:
     tree_ptr get_tree() { return tree_; }
     tree_ptr tree_;
-    key_compare comp;
+    key_compare comp_;
     // アロケーターの値
-    allocator_type alloc;
+    allocator_type alloc_;
 
     tree_ptr create_tree() {
         // 異なる型に対してのAllocatorの型を取得する方法
@@ -287,7 +287,7 @@ class map {
         // https://in-neuro.hatenablog.com/entry/2018/08/01/114441
         typedef typename Allocator::template rebind<tree_type>::other
             tree_allocator_type;
-        tree_allocator_type tree_alloc = alloc;
+        tree_allocator_type tree_alloc = alloc_;
 
         tree_ptr new_tree = tree_alloc.allocate(1);
         tree_alloc.construct(new_tree);
@@ -297,13 +297,15 @@ class map {
     void delete_tree(tree_ptr tree) {
         typedef typename Allocator::template rebind<tree_type>::other
             tree_allocator_type;
-        tree_allocator_type tree_alloc = alloc;
+        tree_allocator_type tree_alloc = alloc_;
 
         tree_alloc.destroy(tree);
         tree_alloc.deallocate(tree, 1);
     }
 
-    pointer allocate(size_type n) { return allocator_type::allocate(alloc, n); }
+    pointer allocate(size_type n) {
+        return allocator_type::allocate(alloc_, n);
+    }
 };
 
 /************************
