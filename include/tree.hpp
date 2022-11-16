@@ -349,7 +349,7 @@ template <class Key, class T, class Compare = std::less<Key>,
 class AVL_tree {
  public:
     typedef ft::pair<Key, T> value_type;
-    typedef ft::pair<const Key, const T> const_value_type;
+    typedef const value_type const_value_type;
     typedef node<value_type> node_type;
     typedef node<value_type>* node_ptr;
 
@@ -362,7 +362,7 @@ class AVL_tree {
     typedef typename Allocator::pointer pointer;
     typedef typename Allocator::const_pointer const_pointer;
     typedef AVL_tree_iterator<value_type, node_type> iterator;
-    typedef AVL_tree_iterator<const value_type, node_type> const_iterator;
+    typedef AVL_tree_iterator<const_value_type, node_type> const_iterator;
     typedef ft::reverse_iterator<iterator> reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 

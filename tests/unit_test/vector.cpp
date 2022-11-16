@@ -460,7 +460,9 @@ static void load_vec_test() {
 
     int_vector numbers;
 
-    for (int i = 0; i < LOAD_FACTOR_NUM; i++) numbers.push_back(i);
+    for (int i = 0; i < LOAD_FACTOR_NUM; i++) {
+        numbers.push_back(i);
+    }
 }
 
 static void iterator_compatible_vec_test() {

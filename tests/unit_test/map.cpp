@@ -400,10 +400,12 @@ static void operator_comp_map_test() {
 static void load_map_test() {
     START_TEST_FUNC
 
+    size_t sum = 0;
     int_map numbers0;
     for (int i = 0; i < LOAD_FACTOR_NUM; i++) {
         value_type v = my_make_pair(i, "hello");
         numbers0.insert(v);
+        sum += i;
     }
 
     for (iterator it = numbers0.begin(); it != numbers0.end(); it++) {
@@ -413,14 +415,18 @@ static void load_map_test() {
     int_map numbers1;
     numbers1 = numbers0;
 
+    int_map numbers2 = numbers0;
+
     for (iterator it = numbers0.begin(); it != numbers0.end();) {
         Key k = it->first;
         it++;
+        sum -= it->first;
         numbers0.erase(k);
     }
     for (iterator it = numbers0.begin(); it != numbers0.end(); it++) {
         std::cout << it->first << std::endl;
     }
+    print(sum);
 }
 
 static void insert_iterator_map_test() {
