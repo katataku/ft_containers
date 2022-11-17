@@ -89,8 +89,8 @@ class vector {
     }
 
     template <class InputIt>
-    typename ft::enable_if<!std::is_integral<InputIt>::value, void>::type
-    assign(InputIt f, InputIt l) {
+    typename ft::enable_if<!ft::is_integral<InputIt>::value, void>::type assign(
+        InputIt f, InputIt l) {
         clear();
         reserve(std::distance(f, l));
         insert(begin(), f, l);
