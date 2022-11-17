@@ -454,6 +454,12 @@ static void is_integral_test() {
     int a = 10;
     func(a);
 }
+class test_class {
+ public:
+    int value;
+    test_class() : value(0){};
+    test_class(int v) : value(v){};
+};
 
 static void load_vec_test() {
     START_TEST_FUNC
@@ -462,6 +468,21 @@ static void load_vec_test() {
 
     for (int i = 0; i < LOAD_FACTOR_NUM; i++) {
         numbers.push_back(i);
+    }
+
+    // for class item && check deep copy
+    LIB::vector<test_class*> test_class_vec1;
+    LIB::vector<test_class*> test_class_vec2;
+
+    for (int i = 0; i < LOAD_FACTOR_NUM; i++) {
+        test_class_vec1.push_back(new test_class(i));
+    }
+    test_class_vec2 = test_class_vec1;
+    test_class_vec1[0] = new test_class(42);
+    if (test_class_vec2[0]->value == 42) {
+        print("test_class_vec2[0] == 42");
+    } else {
+        print("test_class_vec2[0] != 42");
     }
 }
 

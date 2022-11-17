@@ -13,7 +13,7 @@
 
 typedef int Key;
 
-typedef LIB::map<int, std::string> int_map;
+typedef LIB::map<int, std::string, std::less<int> > int_map;
 
 typedef int_map::key_type key_type;
 typedef int_map::mapped_type mapped_type;
@@ -45,7 +45,6 @@ static void constructor_map_test() {
     int_map numbers0;
     print_map(numbers0);
 
-    print("---insert---");
     value_type v = my_make_pair(1, "hello1");
     print_bool(numbers0.insert(v).second);
     print_map(numbers0);

@@ -190,7 +190,7 @@ class vector {
 
     // https://github.dev/llvm/llvm-project/blob/main/libcxx/include/vector
     template <class InputIterator>
-    typename ft::enable_if<!std::is_integral<InputIterator>::value, void>::type
+    typename ft::enable_if<!ft::is_integral<InputIterator>::value, void>::type
     insert(iterator position, InputIterator f, InputIterator l) {
         difference_type pos_diff = position - begin();
         size_type n = l - f;
