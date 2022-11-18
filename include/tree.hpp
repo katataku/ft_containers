@@ -344,8 +344,7 @@ bool operator!=(const ft::AVL_tree_iterator<Iter11, Node1>& lhs,
     return !(lhs == rhs);
 }
 
-template <class Key, class T, class Compare = std::less<Key>,
-          class Allocator = std::allocator<ft::pair<const Key, T> > >
+template <class Key, class T, class Compare, class Allocator>
 class AVL_tree {
  public:
     typedef ft::pair<Key, T> value_type;
@@ -366,12 +365,14 @@ class AVL_tree {
     typedef ft::reverse_iterator<iterator> reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
-    AVL_tree() : end_(create_node()) { set_root(NULL); }
+    AVL_tree() : end_(create_node()), comp_(Compare()) { set_root(NULL); }
 
-    explicit AVL_tree(value_type v) : end_(create_node()) {
+    explicit AVL_tree(value_type v) : end_(create_node()), comp_(Compare()) {
         set_root(create_node(v));
     }
-    AVL_tree(Key k, T t) : end_(create_node()) { set_root(create_node(k, t)); }
+    AVL_tree(Key k, T t) : end_(create_node()), comp_(Compare()) {
+        set_root(create_node(k, t));
+    }
     ~AVL_tree() {
         clear();
         delete_node(end_);
@@ -447,11 +448,12 @@ class AVL_tree {
         while (true) {
             if (cur == NULL) return NULL;
             Key k = cur->get_key();
-            if (k == x) return cur;
-            if (x < k) {
+            if (comp_(x, k)) {
                 cur = cur->left_child_;
-            } else {
+            } else if (comp_(k, x)) {
                 cur = cur->right_child_;
+            } else {
+                return cur;
             }
         }
     }
@@ -503,25 +505,14 @@ class AVL_tree {
         if (new_parent == NULL) {
             set_root(new_node);
         } else {
-            new_parent->set_child(new_node,
-                                  new_node->get_key() < new_parent->get_key());
+            new_parent->set_child(
+                new_node, comp_(new_node->get_key(), new_parent->get_key()));
             balance(new_node);
         }
         return insert_ret_type(iterator(new_node), true);
     }
 
  public:
-    void print_tree() {
-        print("-----------------");
-        print("https://mermaid.live/edit");
-        print("-----------------");
-        print("```mermaid");
-        print("graph TB;");
-        get_root()->print_node();
-        print("```");
-        print("-----------------");
-    }
-
     iterator begin() {
         if (get_root() == NULL) return end();
         return iterator(get_root()->get_min_node());
@@ -553,11 +544,22 @@ class AVL_tree {
     }
 
     node_ptr get_root() const { return root_; }
+    void print_tree() {
+        print("-----------------");
+        print("https://mermaid.live/edit");
+        print("-----------------");
+        print("```mermaid");
+        print("graph TB;");
+        get_root()->print_node();
+        print("```");
+        print("-----------------");
+    }
 
  private:
     node_ptr root_;
     // rootの親としてend用の擬似ノードを配置する。
     node_ptr end_;
+    Compare comp_;
 
     node_ptr set_root(node_ptr root) {
         root_ = root;
@@ -587,7 +589,7 @@ class AVL_tree {
         node_ptr cur = get_root();
         if (cur == NULL) return NULL;
         while (true) {
-            if (x < cur->get_key()) {
+            if (comp_(x, cur->get_key())) {
                 if (cur->left_child_ == NULL) return cur;
                 cur = cur->left_child_;
             } else {

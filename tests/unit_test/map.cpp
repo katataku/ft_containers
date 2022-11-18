@@ -13,7 +13,7 @@
 
 typedef int Key;
 
-typedef LIB::map<int, std::string, std::less<int> > int_map;
+typedef LIB::map<int, std::string, std::greater<int> > int_map;
 
 typedef int_map::key_type key_type;
 typedef int_map::mapped_type mapped_type;

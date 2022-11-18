@@ -26,7 +26,7 @@ class map {
     typedef ft::pair<const Key, T> value_type;
 
  private:
-    typedef AVL_tree<Key, T> tree_type;
+    typedef AVL_tree<Key, T, Compare, Allocator> tree_type;
     typedef tree_type *tree_ptr;
 
  public:
@@ -241,13 +241,13 @@ class map {
     // lower_bound
     iterator lower_bound(const Key &key) {
         for (iterator it = begin(); it != end(); ++it) {
-            if (!(it.base()->get_key() < key)) return it;
+            if (!comp_(it.base()->get_key(), key)) return it;
         }
         return end();
     }
     const_iterator lower_bound(const Key &key) const {
         for (iterator it = begin(); it != end(); ++it) {
-            if (!(it.base()->get_key() < key)) return it;
+            if (!comp_(it.base()->get_key(), key)) return it;
         }
         return end();
     }
@@ -255,13 +255,13 @@ class map {
     // upper_bound
     iterator upper_bound(const Key &key) {
         for (iterator it = begin(); it != end(); ++it) {
-            if ((it.base()->get_key() > key)) return it;
+            if (comp_(key, it.base()->get_key())) return it;
         }
         return end();
     }
     const_iterator upper_bound(const Key &key) const {
         for (iterator it = begin(); it != end(); ++it) {
-            if ((it.base()->get_key() > key)) return it;
+            if (comp_(key, it.base()->get_key())) return it;
         }
         return end();
     }

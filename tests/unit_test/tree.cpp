@@ -11,7 +11,7 @@
 #endif
 
 typedef ft::pair<const int, int> int_int_pair;
-typedef ft::AVL_tree<int, int> AVLtree;
+typedef ft::AVL_tree<int, int, std::less<int>, std::allocator<int> > AVLtree;
 
 void tree_remove_test() {
     START_TEST_FUNC
