@@ -8,4 +8,5 @@ int main() {
     main_pair();
     main_tree();
     main_map();
+    return (0);
 }
