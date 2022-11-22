@@ -495,15 +495,31 @@ static void iterator_compatible_vec_test() {
     numbers0.insert(numbers0.end(), 3);
     numbers0.insert(numbers0.end(), 4);
 
+    // 比較演算子による比較
     int_vector::iterator it = numbers0.begin();
-    int_vector::const_iterator cit = it;
-    std::cout << *cit << std::endl;
+    int_vector::const_iterator cit = numbers0.begin();
+    ++cit;
+    while (it != numbers0.end()) {
+        print_bool(it == cit);
+        print_bool(it != cit);
+        print_bool(it < cit);
+        print_bool(it > cit);
+        print_bool(it <= cit);
+        print_bool(it >= cit);
+        ++it;
+    }
 
-    // stdでは動かないが、ft::vectorでは動く。
-    //  int_vector::const_iterator cit2 = numbers0.begin();
-    //  int_vector::iterator it2;
-    //  it2 = const_cast<int_vector::iterator>(cit2);
-    //  std::cout << *it2 << std::endl;
+    // 実体参照による比較
+    int_vector::iterator it2 = numbers0.begin();
+    int_vector::const_iterator cit2 = numbers0.begin();
+    while (it2 != numbers0.end()) {
+        std::cout << *it2 << std::endl;
+        std::cout << *cit2 << std::endl;
+        ++it2;
+        ++cit2;
+    }
+    print_bool(it2 == numbers0.end());
+    print_bool(cit2 == numbers0.end());
 }
 
 int main_vector() {

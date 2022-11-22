@@ -25,7 +25,7 @@ class vector {
     typedef typename Allocator::pointer pointer;
     typedef typename Allocator::const_pointer const_pointer;
     typedef pointer iterator;
-    typedef const pointer const_iterator;
+    typedef const_pointer const_iterator;
     typedef ft::reverse_iterator<iterator> reverse_iterator;
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
@@ -121,9 +121,9 @@ class vector {
 
     // Iterators
     iterator begin() { return first_; }
-    iterator begin() const { return first_; }
+    const_iterator begin() const { return first_; }
     iterator end() { return last_; }
-    iterator end() const { return last_; }
+    const_iterator end() const { return last_; }
     reverse_iterator rbegin() { return reverse_iterator(last_); }
     reverse_iterator rend() { return reverse_iterator(first_); }
     const_reverse_iterator rbegin() const {
